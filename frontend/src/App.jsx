@@ -218,7 +218,7 @@ function App() {
 
   const copyLinkToClipboard = () => {
     navigator.clipboard.writeText(generatedLink)
-    alert('¡Link copiado al portapapeles!')
+    alert(t.linkCopied)
   }
 
   const fetchStats = async () => {
@@ -636,7 +636,7 @@ function App() {
                     alt={selectedCredential.title}
                     className="modal-credential-image"
                   />
-                  <div className="image-hint">Click para ampliar</div>
+                  <div className="image-hint">{t.clickToEnlarge}</div>
                 </div>
               </div>
 
@@ -651,12 +651,12 @@ function App() {
 
             <div className="modal-body">
               <div className="detail-section">
-                <h3>Descripción</h3>
+                <h3>{t.description}</h3>
                 <p>{selectedCredential.description}</p>
               </div>
 
               <div className="detail-section">
-                <h3>Habilidades</h3>
+                <h3>{t.skills}</h3>
                 <div className="skills-tags">
                   {selectedCredential.skills.map((skill, index) => (
                     <span key={index} className="skill-tag">{skill}</span>
@@ -666,26 +666,26 @@ function App() {
 
               <div className="detail-grid">
                 <div className="detail-item">
-                  <strong>Fecha de emisión</strong>
-                  <span>{new Date(selectedCredential.issue_date).toLocaleDateString('es-MX', {
+                  <strong>{t.issueDate}</strong>
+                  <span>{new Date(selectedCredential.issue_date).toLocaleDateString(language === 'es' ? 'es-MX' : 'en-US', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric'
                   })}</span>
                 </div>
                 <div className="detail-item">
-                  <strong>Duración</strong>
-                  <span>{selectedCredential.hours} horas</span>
+                  <strong>{t.duration}</strong>
+                  <span>{selectedCredential.hours} {t.hours}</span>
                 </div>
                 {selectedCredential.grade && (
                   <div className="detail-item">
-                    <strong>Calificación</strong>
+                    <strong>{t.grade}</strong>
                     <span>{selectedCredential.grade}</span>
                   </div>
                 )}
                 <div className="detail-item">
-                  <strong>Tipo</strong>
-                  <span>{selectedCredential.type === 'degree' ? 'Título' : 'Microcredencial'}</span>
+                  <strong>{t.type}</strong>
+                  <span>{selectedCredential.type === 'degree' ? t.degree : t.microcredential}</span>
                 </div>
               </div>
 
@@ -698,17 +698,17 @@ function App() {
                   {isVerifying ? (
                     <>
                       <span className="verify-spinner"></span>
-                      Verificando...
+                      {t.verifying}
                     </>
                   ) : verificationStatus && verificationStatus.includes('✓') ? (
                     <>
                       <span className="verify-check">✓</span>
-                      Verificado
+                      {t.verified}
                     </>
                   ) : (
                     <>
                       <span className="verify-icon">🔒</span>
-                      Verificar Open Badge
+                      {t.verifyBadge}
                     </>
                   )}
                 </button>
@@ -717,7 +717,7 @@ function App() {
                     className="btn-secondary"
                     onClick={() => setShareMenuOpen(!shareMenuOpen)}
                   >
-                    Compartir
+                    {t.share}
                   </button>
                   {shareMenuOpen && (
                     <div className="share-dropdown">
@@ -726,7 +726,7 @@ function App() {
                         onClick={() => handleShare('download')}
                       >
                         <span className="share-icon">📥</span>
-                        Descargar
+                        {t.download}
                       </button>
                       <button
                         className="share-option"
@@ -778,12 +778,12 @@ function App() {
 
             <div className="share-link-content">
               <div className="share-link-header">
-                <h2>🎉 ¡Link generado exitosamente!</h2>
-                <p>Comparte este link con empleadores para mostrar tus credenciales seleccionadas</p>
+                <h2>🎉 {t.linkGenerated}</h2>
+                <p>{t.shareDescription}</p>
               </div>
 
               <div className="selected-credentials-preview">
-                <h3>Credenciales incluidas ({selectedCredentials.length})</h3>
+                <h3>{t.credentialsIncluded} ({selectedCredentials.length})</h3>
                 <div className="preview-grid">
                   {selectedCredentials.map(cred => (
                     <div key={cred.id} className="preview-card">
@@ -795,7 +795,7 @@ function App() {
               </div>
 
               <div className="link-box">
-                <label>Link para compartir:</label>
+                <label>{t.linkToShare}</label>
                 <div className="link-input-group">
                   <input
                     type="text"
@@ -804,25 +804,25 @@ function App() {
                     className="link-input"
                   />
                   <button className="btn-copy-link" onClick={copyLinkToClipboard}>
-                    📋 Copiar
+                    📋 {t.copy}
                   </button>
                 </div>
               </div>
 
               <div className="share-link-info">
-                <p>ℹ️ Este link permitirá al empleador ver solo las credenciales seleccionadas y verificar su autenticidad.</p>
+                <p>{t.linkInfo}</p>
               </div>
 
               <div className="share-link-actions">
                 <button className="btn-secondary" onClick={() => setShareModalOpen(false)}>
-                  Cerrar
+                  {t.close}
                 </button>
                 <button className="btn-primary" onClick={() => {
                   setShareModalOpen(false)
                   setSelectionMode(false)
                   setSelectedCredentials([])
                 }}>
-                  Listo
+                  {t.done}
                 </button>
               </div>
             </div>
