@@ -13,9 +13,6 @@ function Login({ onLogin }) {
 
         <div className="login-card">
           <h2>Iniciar Sesión</h2>
-          <p className="login-description">
-            Accede a tu billetera de credenciales digitales del Tecnológico de Monterrey
-          </p>
 
           <button className="linkedin-sso-button" onClick={onLogin}>
             <svg className="linkedin-icon" viewBox="0 0 24 24" fill="currentColor">

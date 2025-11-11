@@ -102,8 +102,11 @@ function App() {
     if (search.trim() !== '') {
       filtered = filtered.filter(cred =>
         cred.title.toLowerCase().includes(search.toLowerCase()) ||
+        (cred.title_en && cred.title_en.toLowerCase().includes(search.toLowerCase())) ||
         cred.description.toLowerCase().includes(search.toLowerCase()) ||
-        cred.skills.some(skill => skill.toLowerCase().includes(search.toLowerCase()))
+        (cred.description_en && cred.description_en.toLowerCase().includes(search.toLowerCase())) ||
+        cred.skills.some(skill => skill.toLowerCase().includes(search.toLowerCase())) ||
+        (cred.skills_en && cred.skills_en.some(skill => skill.toLowerCase().includes(search.toLowerCase())))
       )
     }
 
@@ -388,9 +391,25 @@ function App() {
                   {t.notifications}
                 </button>
                 <div className="dropdown-divider"></div>
-                <button className="dropdown-item language-toggle" onClick={toggleLanguage}>
-                  {t.language}: {language === 'es' ? '🇪🇸 Español' : '🇺🇸 English'}
-                </button>
+                <div className="language-selector">
+                  <div className="language-label">{t.language}</div>
+                  <div className="language-options">
+                    <button
+                      className={`language-option ${language === 'es' ? 'active' : ''}`}
+                      onClick={() => language !== 'es' && toggleLanguage()}
+                    >
+                      <span className="flag">🇪🇸</span>
+                      <span className="lang-name">Español</span>
+                    </button>
+                    <button
+                      className={`language-option ${language === 'en' ? 'active' : ''}`}
+                      onClick={() => language !== 'en' && toggleLanguage()}
+                    >
+                      <span className="flag">🇺🇸</span>
+                      <span className="lang-name">English</span>
+                    </button>
+                  </div>
+                </div>
                 <div className="dropdown-divider"></div>
                 <button className="dropdown-item" onClick={toggleSelectionMode}>
                   {t.shareWithEmployer}
@@ -602,11 +621,11 @@ function App() {
                           )}
                           <div className="trophy-stand">
                             <div className="trophy-image">
-                              <img src={credential.thumbnail} alt={credential.title} />
+                              <img src={credential.thumbnail} alt={language === 'en' && credential.title_en ? credential.title_en : credential.title} />
                             </div>
                           </div>
                           <div className="trophy-plaque">
-                            <h3>{credential.title}</h3>
+                            <h3>{language === 'en' && credential.title_en ? credential.title_en : credential.title}</h3>
                             <div className="credential-year">
                               {new Date(credential.issue_date).getFullYear()}
                             </div>
@@ -642,7 +661,7 @@ function App() {
 
               <div className="modal-right">
                 <div className="modal-title-section">
-                  <h2>{selectedCredential.title}</h2>
+                  <h2>{language === 'en' && selectedCredential.title_en ? selectedCredential.title_en : selectedCredential.title}</h2>
                   <div className="modal-issuer">
                     <img src={selectedCredential.issuer_logo} alt={selectedCredential.issuer} />
                     <span>{selectedCredential.issuer}</span>
@@ -658,7 +677,7 @@ function App() {
               <div className="detail-section">
                 <h3>{t.skills}</h3>
                 <div className="skills-tags">
-                  {selectedCredential.skills.map((skill, index) => (
+                  {(language === 'en' && selectedCredential.skills_en ? selectedCredential.skills_en : selectedCredential.skills).map((skill, index) => (
                     <span key={index} className="skill-tag">{skill}</span>
                   ))}
                 </div>
@@ -787,8 +806,8 @@ function App() {
                 <div className="preview-grid">
                   {selectedCredentials.map(cred => (
                     <div key={cred.id} className="preview-card">
-                      <img src={cred.thumbnail} alt={cred.title} />
-                      <span>{cred.title}</span>
+                      <img src={cred.thumbnail} alt={language === 'en' && cred.title_en ? cred.title_en : cred.title} />
+                      <span>{language === 'en' && cred.title_en ? cred.title_en : cred.title}</span>
                     </div>
                   ))}
                 </div>
