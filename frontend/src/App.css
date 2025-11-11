@@ -629,12 +629,56 @@ html, body {
 
 .shelf-items {
   display: flex;
-  gap: 2rem;
+  gap: 0;
   padding: 0.5rem 0;
   overflow-x: auto;
   scroll-behavior: smooth;
   scrollbar-width: thin;
   scrollbar-color: #cbd5e0 transparent;
+}
+
+.issuer-group {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  position: relative;
+  gap: 1rem;
+}
+
+.issuer-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #4a5568;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.25rem 0.75rem;
+  background: #e2e8f0;
+  border-radius: 4px;
+  white-space: nowrap;
+  max-width: fit-content;
+}
+
+.issuer-credentials {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-end;
+  padding: 0 1.5rem;
+}
+
+.issuer-divider {
+  width: 2px;
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    #cbd5e0 10%,
+    #cbd5e0 90%,
+    transparent 100%
+  );
+  height: 220px;
+  margin: 0 1rem;
+  align-self: flex-end;
+  position: relative;
+  flex-shrink: 0;
+  margin-bottom: calc(1rem + 1.5rem);
 }
 
 .shelf-items::-webkit-scrollbar {

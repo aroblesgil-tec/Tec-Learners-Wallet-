@@ -345,6 +345,43 @@ function App() {
     }
   }
 
+  const groupCredentialsByIssuer = (categoryCredentials, categoryName) => {
+    // Las categorías "Otras" y "Vencidas" no se agrupan por emisor
+    if (categoryName === 'Otras' || categoryName === 'Other' ||
+        categoryName === 'Vencidas' || categoryName === 'Expired' ||
+        selectionMode) {
+      return { 'all': categoryCredentials }
+    }
+
+    // Agrupar por emisor
+    const issuerGroups = {}
+    const issuerOrder = ['Posgrado', 'Profesional', 'PrepaTEC', 'Educación Continua']
+
+    categoryCredentials.forEach(cred => {
+      if (!issuerGroups[cred.issuer]) {
+        issuerGroups[cred.issuer] = []
+      }
+      issuerGroups[cred.issuer].push(cred)
+    })
+
+    // Ordenar grupos según el orden definido
+    const orderedIssuerGroups = {}
+    issuerOrder.forEach(issuer => {
+      if (issuerGroups[issuer]) {
+        orderedIssuerGroups[issuer] = issuerGroups[issuer]
+      }
+    })
+
+    // Agregar cualquier emisor que no esté en el orden predefinido
+    Object.keys(issuerGroups).forEach(issuer => {
+      if (!orderedIssuerGroups[issuer]) {
+        orderedIssuerGroups[issuer] = issuerGroups[issuer]
+      }
+    })
+
+    return orderedIssuerGroups
+  }
+
   if (!isLoggedIn) {
     return <Login onLogin={handleLogin} />
   }
@@ -601,38 +638,52 @@ function App() {
                 <h2 className="shelf-title">{categoryName}</h2>
                 <div className="shelf">
                   <div className="shelf-items">
-                    {categoryCredentials.map((credential) => {
-                      const isSelected = selectedCredentials.some(c => c.id === credential.id)
-                      return (
-                        <div
-                          key={credential.id}
-                          className={`credential-trophy ${credential.category === 'Vencidas' ? 'expired' : ''} ${selectionMode ? 'selection-mode-active' : ''} ${isSelected ? 'selected' : ''}`}
-                          onClick={() => selectionMode ? toggleCredentialSelection(credential) : openCredentialDetail(credential)}
-                        >
-                          {selectionMode && (
-                            <div className="selection-checkbox">
-                              <input
-                                type="checkbox"
-                                checked={isSelected}
-                                onChange={() => toggleCredentialSelection(credential)}
-                                onClick={(e) => e.stopPropagation()}
-                              />
-                            </div>
+                    {Object.entries(groupCredentialsByIssuer(categoryCredentials, categoryName)).map(([issuerName, issuerCredentials], issuerIndex, array) => (
+                      <>
+                        <div key={issuerName} className="issuer-group">
+                          {issuerName !== 'all' && (
+                            <div className="issuer-label">{issuerName}</div>
                           )}
-                          <div className="trophy-stand">
-                            <div className="trophy-image">
-                              <img src={credential.thumbnail} alt={language === 'en' && credential.title_en ? credential.title_en : credential.title} />
-                            </div>
-                          </div>
-                          <div className="trophy-plaque">
-                            <h3>{language === 'en' && credential.title_en ? credential.title_en : credential.title}</h3>
-                            <div className="credential-year">
-                              {new Date(credential.issue_date).getFullYear()}
-                            </div>
+                          <div className="issuer-credentials">
+                            {issuerCredentials.map((credential) => {
+                              const isSelected = selectedCredentials.some(c => c.id === credential.id)
+                              return (
+                                <div
+                                  key={credential.id}
+                                  className={`credential-trophy ${credential.category === 'Vencidas' ? 'expired' : ''} ${selectionMode ? 'selection-mode-active' : ''} ${isSelected ? 'selected' : ''}`}
+                                  onClick={() => selectionMode ? toggleCredentialSelection(credential) : openCredentialDetail(credential)}
+                                >
+                                  {selectionMode && (
+                                    <div className="selection-checkbox">
+                                      <input
+                                        type="checkbox"
+                                        checked={isSelected}
+                                        onChange={() => toggleCredentialSelection(credential)}
+                                        onClick={(e) => e.stopPropagation()}
+                                      />
+                                    </div>
+                                  )}
+                                  <div className="trophy-stand">
+                                    <div className="trophy-image">
+                                      <img src={credential.thumbnail} alt={language === 'en' && credential.title_en ? credential.title_en : credential.title} />
+                                    </div>
+                                  </div>
+                                  <div className="trophy-plaque">
+                                    <h3>{language === 'en' && credential.title_en ? credential.title_en : credential.title}</h3>
+                                    <div className="credential-year">
+                                      {new Date(credential.issue_date).getFullYear()}
+                                    </div>
+                                  </div>
+                                </div>
+                              )
+                            })}
                           </div>
                         </div>
-                      )
-                    })}
+                        {issuerIndex < array.length - 1 && issuerName !== 'all' && (
+                          <div key={`divider-${issuerName}`} className="issuer-divider"></div>
+                        )}
+                      </>
+                    ))}
                   </div>
                   <div className="shelf-board"></div>
                 </div>
