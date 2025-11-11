@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import './App.css'
+import Login from './Login'
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [credentials, setCredentials] = useState([])
   const [allCredentials, setAllCredentials] = useState([])
   const [selectedCredential, setSelectedCredential] = useState(null)
@@ -25,10 +27,16 @@ function App() {
 
   const categories = ['Todas', 'Títulos', 'Curriculares', 'Alternativas', 'Educación continua', 'Otras', 'Vencidas']
 
+  const handleLogin = () => {
+    setIsLoggedIn(true)
+  }
+
   useEffect(() => {
-    fetchCredentials()
-    fetchStats()
-  }, [])
+    if (isLoggedIn) {
+      fetchCredentials()
+      fetchStats()
+    }
+  }, [isLoggedIn])
 
   const fetchCredentials = async () => {
     try {
@@ -298,6 +306,10 @@ function App() {
       // Una sola agrupación con el nombre de la categoría
       return { [selectedCategory]: credentials }
     }
+  }
+
+  if (!isLoggedIn) {
+    return <Login onLogin={handleLogin} />
   }
 
   if (loading) {

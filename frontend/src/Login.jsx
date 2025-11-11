@@ -1,0 +1,45 @@
+import { useState } from 'react'
+import './Login.css'
+
+function Login({ onLogin }) {
+  return (
+    <div className="login-page">
+      <div className="login-container">
+        <div className="login-header">
+          <img src="/logo_tec.png" alt="Tecnológico de Monterrey" className="login-logo" />
+          <h1>Tec Learners Wallet</h1>
+          <p className="login-subtitle">Gestiona y comparte tus credenciales académicas</p>
+        </div>
+
+        <div className="login-card">
+          <h2>Iniciar Sesión</h2>
+          <p className="login-description">
+            Accede a tu billetera de credenciales digitales del Tecnológico de Monterrey
+          </p>
+
+          <button className="linkedin-sso-button" onClick={onLogin}>
+            <svg className="linkedin-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+            </svg>
+            Continuar con LinkedIn
+          </button>
+
+          <div className="login-divider">
+            <span>Inicio de sesión único (SSO)</span>
+          </div>
+
+          <div className="login-info">
+            <p>🔒 Autenticación segura mediante LinkedIn</p>
+            <p>✓ Acceso rápido y verificado</p>
+          </div>
+        </div>
+
+        <div className="login-footer">
+          <p>© 2024 Tecnológico de Monterrey</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default Login
