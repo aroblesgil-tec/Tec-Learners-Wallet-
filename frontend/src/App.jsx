@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import Login from './Login'
+import { translations } from './translations'
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [language, setLanguage] = useState('es')
   const [credentials, setCredentials] = useState([])
   const [allCredentials, setAllCredentials] = useState([])
   const [selectedCredential, setSelectedCredential] = useState(null)
@@ -25,10 +27,42 @@ function App() {
   const [shareModalOpen, setShareModalOpen] = useState(false)
   const [generatedLink, setGeneratedLink] = useState('')
 
-  const categories = ['Todas', 'Títulos', 'Curriculares', 'Alternativas', 'Educación continua', 'Otras', 'Vencidas']
+  const t = translations[language]
+
+  const categories = {
+    es: ['Todas', 'Títulos', 'Curriculares', 'Alternativas', 'Educación continua', 'Otras', 'Vencidas'],
+    en: ['All', 'Degrees', 'Curricular', 'Alternative', 'Continuing Education', 'Other', 'Expired']
+  }
 
   const handleLogin = () => {
     setIsLoggedIn(true)
+  }
+
+  const toggleLanguage = () => {
+    const newLang = language === 'es' ? 'en' : 'es'
+    setLanguage(newLang)
+
+    // Update category and sort options when language changes
+    const categoryMap = {
+      'Todas': 'All', 'All': 'Todas',
+      'Títulos': 'Degrees', 'Degrees': 'Títulos',
+      'Curriculares': 'Curricular', 'Curricular': 'Curriculares',
+      'Alternativas': 'Alternative', 'Alternative': 'Alternativas',
+      'Educación continua': 'Continuing Education', 'Continuing Education': 'Educación continua',
+      'Otras': 'Other', 'Other': 'Otras',
+      'Vencidas': 'Expired', 'Expired': 'Vencidas'
+    }
+
+    const sortMap = {
+      'Más reciente': 'Most Recent', 'Most Recent': 'Más reciente',
+      'Más antiguo': 'Oldest', 'Oldest': 'Más antiguo',
+      'A-Z': 'A-Z', 'Z-A': 'Z-A'
+    }
+
+    setSelectedCategory(categoryMap[selectedCategory] || (newLang === 'es' ? 'Todas' : 'All'))
+    setSortBy(sortMap[sortBy] || (newLang === 'es' ? 'Más reciente' : 'Most Recent'))
+    setSelectedIssuer(newLang === 'es' ? 'Todos' : 'All')
+    setSelectedYear(newLang === 'es' ? 'Todos' : 'All')
   }
 
   useEffect(() => {
@@ -121,14 +155,14 @@ function App() {
 
   const getUniqueIssuers = () => {
     const issuers = [...new Set(allCredentials.map(cred => cred.issuer))]
-    return ['Todos', ...issuers]
+    return [language === 'es' ? 'Todos' : 'All', ...issuers]
   }
 
   const getUniqueYears = () => {
     const years = [...new Set(allCredentials.map(cred =>
       new Date(cred.issue_date).getFullYear().toString()
     ))].sort((a, b) => b - a)
-    return ['Todos', ...years]
+    return [language === 'es' ? 'Todos' : 'All', ...years]
   }
 
   const getActiveFiltersCount = () => {
@@ -271,10 +305,10 @@ function App() {
   const groupCredentialsByCategory = () => {
     // En modo selección, no agrupar - mostrar todas juntas
     if (selectionMode) {
-      return { 'Mis Credenciales': credentials }
+      return { [t.myCredentials]: credentials }
     }
 
-    if (selectedCategory === 'Todas') {
+    if (selectedCategory === 'Todas' || selectedCategory === 'All') {
       // Agrupar por categoría principal
       const groups = {}
       credentials.forEach(cred => {
@@ -316,7 +350,7 @@ function App() {
     return (
       <div className="loading">
         <div className="spinner"></div>
-        <p>Cargando credenciales...</p>
+        <p>{t.loading}</p>
       </div>
     )
   }
@@ -342,24 +376,28 @@ function App() {
                 </div>
                 <div className="dropdown-divider"></div>
                 <button className="dropdown-item">
-                  Mi perfil
+                  {t.myProfile}
                 </button>
                 <button className="dropdown-item">
-                  Configuración
+                  {t.settings}
                 </button>
                 <button className="dropdown-item">
-                  Descargar credenciales
+                  {t.downloadCredentials}
                 </button>
                 <button className="dropdown-item">
-                  Notificaciones
+                  {t.notifications}
+                </button>
+                <div className="dropdown-divider"></div>
+                <button className="dropdown-item language-toggle" onClick={toggleLanguage}>
+                  {t.language}: {language === 'es' ? '🇪🇸 Español' : '🇺🇸 English'}
                 </button>
                 <div className="dropdown-divider"></div>
                 <button className="dropdown-item" onClick={toggleSelectionMode}>
-                  Compartir con empleador
+                  {t.shareWithEmployer}
                 </button>
                 <div className="dropdown-divider"></div>
                 <button className="dropdown-item logout">
-                  Cerrar sesión
+                  {t.logout}
                 </button>
               </div>
             )}
@@ -373,7 +411,7 @@ function App() {
           <div className="search-bar">
             <input
               type="text"
-              placeholder="Buscar credenciales, habilidades, descripción..."
+              placeholder={t.searchPlaceholder}
               value={searchTerm}
               onChange={(e) => handleSearchChange(e.target.value)}
               className="search-input"
@@ -385,7 +423,7 @@ function App() {
             onClick={() => setFiltersOpen(!filtersOpen)}
           >
             <span className="filter-icon">⚙️</span>
-            Filtros
+            {t.filters}
             {getActiveFiltersCount() > 0 && (
               <span className="filter-badge">{getActiveFiltersCount()}</span>
             )}
@@ -395,17 +433,17 @@ function App() {
         {filtersOpen && (
           <div className="filters-panel">
             <div className="filters-header">
-              <h3>Filtros</h3>
+              <h3>{t.filters}</h3>
               {getActiveFiltersCount() > 0 && (
                 <button className="clear-filters-btn" onClick={clearAllFilters}>
-                  Limpiar filtros
+                  {t.clearFilters}
                 </button>
               )}
             </div>
 
             <div className="filters-bar">
               <div className="filter-group">
-                <label>Emisor</label>
+                <label>{t.issuer}</label>
                 <select
                   value={selectedIssuer}
                   onChange={(e) => handleIssuerChange(e.target.value)}
@@ -418,7 +456,7 @@ function App() {
               </div>
 
               <div className="filter-group">
-                <label>Año</label>
+                <label>{t.year}</label>
                 <select
                   value={selectedYear}
                   onChange={(e) => handleYearChange(e.target.value)}
@@ -431,14 +469,14 @@ function App() {
               </div>
 
               <div className="filter-group">
-                <label>Ordenar por</label>
+                <label>{t.sortBy}</label>
                 <select
                   value={sortBy}
                   onChange={(e) => handleSortChange(e.target.value)}
                   className="filter-select"
                 >
-                  <option value="Más reciente">Más reciente</option>
-                  <option value="Más antiguo">Más antiguo</option>
+                  <option value={language === 'es' ? 'Más reciente' : 'Most Recent'}>{t.mostRecent}</option>
+                  <option value={language === 'es' ? 'Más antiguo' : 'Oldest'}>{t.oldest}</option>
                   <option value="A-Z">A-Z</option>
                   <option value="Z-A">Z-A</option>
                 </select>
@@ -446,29 +484,29 @@ function App() {
             </div>
 
             <button className="apply-filters-btn" onClick={() => setFiltersOpen(false)}>
-              Aplicar filtros
+              {t.applyFilters}
             </button>
           </div>
         )}
 
         {!filtersOpen && getActiveFiltersCount() > 0 && (
           <div className="active-filters-summary">
-            {selectedIssuer !== 'Todos' && (
+            {selectedIssuer !== t.all && selectedIssuer !== 'Todos' && selectedIssuer !== 'All' && (
               <span className="filter-tag">
-                Emisor: {selectedIssuer}
-                <button onClick={() => handleIssuerChange('Todos')}>×</button>
+                {t.issuer}: {selectedIssuer}
+                <button onClick={() => handleIssuerChange(language === 'es' ? 'Todos' : 'All')}>×</button>
               </span>
             )}
-            {selectedYear !== 'Todos' && (
+            {selectedYear !== t.all && selectedYear !== 'Todos' && selectedYear !== 'All' && (
               <span className="filter-tag">
-                Año: {selectedYear}
-                <button onClick={() => handleYearChange('Todos')}>×</button>
+                {t.year}: {selectedYear}
+                <button onClick={() => handleYearChange(language === 'es' ? 'Todos' : 'All')}>×</button>
               </span>
             )}
-            {sortBy !== 'Más reciente' && (
+            {sortBy !== t.mostRecent && sortBy !== 'Más reciente' && sortBy !== 'Most Recent' && (
               <span className="filter-tag">
-                Orden: {sortBy}
-                <button onClick={() => handleSortChange('Más reciente')}>×</button>
+                {t.order}: {sortBy}
+                <button onClick={() => handleSortChange(language === 'es' ? 'Más reciente' : 'Most Recent')}>×</button>
               </span>
             )}
           </div>
@@ -479,7 +517,7 @@ function App() {
       {!selectionMode && (
         <div className="categories-container">
         <div className="categories-scroll">
-          {categories.map((category) => (
+          {categories[language].map((category) => (
             <button
               key={category}
               className={`category-chip ${selectedCategory === category ? 'active' : ''}`}
@@ -492,19 +530,19 @@ function App() {
         </div>
       )}
 
-      {!selectionMode && stats && selectedCategory === 'Todas' && (
+      {!selectionMode && stats && (selectedCategory === 'Todas' || selectedCategory === 'All') && (
         <div className="stats-container">
           <div className="stat-card">
             <div className="stat-number">{stats.total_credentials}</div>
-            <div className="stat-label">credenciales</div>
+            <div className="stat-label">{t.credentials}</div>
           </div>
           <div className="stat-card">
             <div className="stat-number">{stats.microcredentials}</div>
-            <div className="stat-label">microcredenciales</div>
+            <div className="stat-label">{t.microcredentials}</div>
           </div>
           <div className="stat-card">
             <div className="stat-number">{stats.degrees}</div>
-            <div className="stat-label">títulos</div>
+            <div className="stat-label">{t.titles}</div>
           </div>
         </div>
       )}
@@ -513,18 +551,18 @@ function App() {
         <div className="selection-mode-banner">
           <div className="selection-mode-content">
             <span className="selection-count">
-              {selectedCredentials.length} credencial{selectedCredentials.length !== 1 ? 'es' : ''} seleccionada{selectedCredentials.length !== 1 ? 's' : ''}
+              {selectedCredentials.length} {t.credentialsSelected}{selectedCredentials.length !== 1 ? t.credentialsSelectedPlural : ''}
             </span>
             <div className="selection-actions">
               <button className="btn-cancel-selection" onClick={toggleSelectionMode}>
-                Cancelar
+                {t.cancel}
               </button>
               <button
                 className="btn-generate-link"
                 onClick={generateShareLink}
                 disabled={selectedCredentials.length === 0}
               >
-                Generar link para compartir
+                {t.generateLink}
               </button>
             </div>
           </div>
@@ -534,8 +572,8 @@ function App() {
       <main className="main-content">
         {credentials.length === 0 ? (
           <div style={{ textAlign: 'center', color: '#2d3748', padding: '3rem' }}>
-            <h2>No hay credenciales en esta categoría</h2>
-            <p>Asegúrate de que el backend esté corriendo en http://localhost:8000</p>
+            <h2>{t.noCredentials}</h2>
+            <p>{t.backendWarning}</p>
           </div>
         ) : (
           <div className="shelves-container">

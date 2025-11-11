@@ -26,6 +26,9 @@ html, body {
   background: linear-gradient(135deg, #0033a0 0%, #003d82 100%);
   padding: 1.5rem 0;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .header-content {
@@ -151,6 +154,16 @@ html, body {
 .dropdown-item:hover {
   background: #f7fafc;
   padding-left: 1.75rem;
+}
+
+.dropdown-item.language-toggle {
+  color: #0033a0;
+  font-weight: 600;
+}
+
+.dropdown-item.language-toggle:hover {
+  background: #f0f7ff;
+  color: #002d8a;
 }
 
 .dropdown-item.logout {

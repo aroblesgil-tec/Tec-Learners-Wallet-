@@ -23,15 +23,6 @@ function Login({ onLogin }) {
             </svg>
             Continuar con LinkedIn
           </button>
-
-          <div className="login-divider">
-            <span>Inicio de sesión único (SSO)</span>
-          </div>
-
-          <div className="login-info">
-            <p>🔒 Autenticación segura mediante LinkedIn</p>
-            <p>✓ Acceso rápido y verificado</p>
-          </div>
         </div>
 
         <div className="login-footer">
