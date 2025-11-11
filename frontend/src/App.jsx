@@ -652,7 +652,7 @@ function App() {
             <div className="modal-body">
               <div className="detail-section">
                 <h3>{t.description}</h3>
-                <p>{selectedCredential.description}</p>
+                <p>{language === 'en' && selectedCredential.description_en ? selectedCredential.description_en : selectedCredential.description}</p>
               </div>
 
               <div className="detail-section">
