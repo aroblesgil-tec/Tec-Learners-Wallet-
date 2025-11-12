@@ -10,7 +10,9 @@
       "Bash(python -m uvicorn:*)",
       "Bash(npm run dev:*)",
       "Bash(if exist backend rmdir /s /q backend)",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "Bash(git remote add:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []
