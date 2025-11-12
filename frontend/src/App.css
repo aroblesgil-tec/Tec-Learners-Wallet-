@@ -251,13 +251,21 @@ html, body {
 }
 
 .dropdown-item.logout {
-  color: #dc2626;
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: white;
   font-weight: 600;
+  text-align: center;
+  justify-content: center;
+  margin: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  padding: 0.85rem 1rem;
+  width: calc(100% - 1.5rem);
 }
 
 .dropdown-item.logout:hover {
-  background: #fef2f2;
-  color: #b91c1c;
+  background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+  color: white;
+  width: calc(100% - 1.5rem);
 }
 
 .search-filter-container {
