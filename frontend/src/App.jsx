@@ -4,6 +4,13 @@ import Login from './Login'
 import { translations } from './translations'
 import CREDENTIALS_DATA from './data/credentials.json'
 
+// Helper function to get correct image path for GitHub Pages
+const getImagePath = (path) => {
+  if (!path) return path
+  const base = import.meta.env.BASE_URL
+  return path.startsWith('http') ? path : `${base}${path}`
+}
+
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [language, setLanguage] = useState('es')
@@ -406,7 +413,7 @@ function App() {
     <div className="app">
       <header className="header">
         <div className="header-content">
-          <img src="/logo_tec.png" alt="Tecnológico de Monterrey" className="header-logo" />
+          <img src={getImagePath("logo_tec.png")} alt="Tecnológico de Monterrey" className="header-logo" />
           <h1>Tec Learners Wallet</h1>
           <div className="user-menu-container">
             <button
@@ -671,7 +678,7 @@ function App() {
                                   )}
                                   <div className="trophy-stand">
                                     <div className="trophy-image">
-                                      <img src={credential.thumbnail} alt={language === 'en' && credential.title_en ? credential.title_en : credential.title} />
+                                      <img src={getImagePath(credential.thumbnail)} alt={language === 'en' && credential.title_en ? credential.title_en : credential.title} />
                                     </div>
                                   </div>
                                   <div className="trophy-plaque">
@@ -708,7 +715,7 @@ function App() {
               <div className="modal-left">
                 <div className="modal-image-container" onClick={toggleImageFullscreen}>
                   <img
-                    src={selectedCredential.thumbnail}
+                    src={getImagePath(selectedCredential.thumbnail)}
                     alt={selectedCredential.title}
                     className="modal-credential-image"
                   />
@@ -720,7 +727,7 @@ function App() {
                 <div className="modal-title-section">
                   <h2>{language === 'en' && selectedCredential.title_en ? selectedCredential.title_en : selectedCredential.title}</h2>
                   <div className="modal-issuer">
-                    <img src={selectedCredential.issuer_logo} alt={selectedCredential.issuer} />
+                    <img src={getImagePath(selectedCredential.issuer_logo)} alt={selectedCredential.issuer} />
                     <span>{selectedCredential.issuer}</span>
                   </div>
                 </div>
@@ -911,7 +918,7 @@ function App() {
         <div className="fullscreen-overlay" onClick={toggleImageFullscreen}>
           <button className="fullscreen-close" onClick={toggleImageFullscreen}>×</button>
           <img
-            src={selectedCredential.thumbnail}
+            src={getImagePath(selectedCredential.thumbnail)}
             alt={selectedCredential.title}
             className="fullscreen-image"
             onClick={(e) => e.stopPropagation()}
@@ -935,7 +942,7 @@ function App() {
                 <div className="preview-grid">
                   {selectedCredentials.map(cred => (
                     <div key={cred.id} className="preview-card">
-                      <img src={cred.thumbnail} alt={language === 'en' && cred.title_en ? cred.title_en : cred.title} />
+                      <img src={getImagePath(cred.thumbnail)} alt={language === 'en' && cred.title_en ? cred.title_en : cred.title} />
                       <span>{language === 'en' && cred.title_en ? cred.title_en : cred.title}</span>
                     </div>
                   ))}
