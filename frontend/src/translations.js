@@ -63,6 +63,15 @@ export const translations = {
     share: "Compartir",
     download: "Descargar",
 
+    // Degree Versions
+    degreeVersions: "Versiones del Título",
+    blockchainVersion: "Versión Blockchain",
+    sepVersion: "Versión SEP",
+    downloadFiles: "Descargar archivos",
+    recommendedFor: "Recomendado para",
+    employers: "empleadores",
+    officialProcedures: "trámites oficiales",
+
     // Verification
     verifyingSignature: "Verificando firma digital...",
     verifyingIssuer: "Verificando emisor...",
@@ -155,6 +164,15 @@ export const translations = {
     verified: "Verified",
     share: "Share",
     download: "Download",
+
+    // Degree Versions
+    degreeVersions: "Degree Versions",
+    blockchainVersion: "Blockchain Version",
+    sepVersion: "SEP Version",
+    downloadFiles: "Download files",
+    recommendedFor: "Recommended for",
+    employers: "employers",
+    officialProcedures: "official procedures",
 
     // Verification
     verifyingSignature: "Verifying digital signature...",

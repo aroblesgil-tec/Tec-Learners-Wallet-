@@ -346,16 +346,13 @@ function App() {
   }
 
   const groupCredentialsByIssuer = (categoryCredentials, categoryName) => {
-    // Las categorías "Otras" y "Vencidas" no se agrupan por emisor
-    if (categoryName === 'Otras' || categoryName === 'Other' ||
-        categoryName === 'Vencidas' || categoryName === 'Expired' ||
-        selectionMode) {
+    // En modo selección, no agrupar por emisor
+    if (selectionMode) {
       return { 'all': categoryCredentials }
     }
 
     // Agrupar por emisor
     const issuerGroups = {}
-    const issuerOrder = ['Posgrado', 'Profesional', 'PrepaTEC', 'Educación Continua']
 
     categoryCredentials.forEach(cred => {
       if (!issuerGroups[cred.issuer]) {
@@ -364,22 +361,32 @@ function App() {
       issuerGroups[cred.issuer].push(cred)
     })
 
-    // Ordenar grupos según el orden definido
-    const orderedIssuerGroups = {}
-    issuerOrder.forEach(issuer => {
-      if (issuerGroups[issuer]) {
-        orderedIssuerGroups[issuer] = issuerGroups[issuer]
-      }
-    })
+    // Para categorías específicas, usar orden predefinido
+    const isOrderedCategory = categoryName !== 'Otras' && categoryName !== 'Other' &&
+                               categoryName !== 'Vencidas' && categoryName !== 'Expired'
 
-    // Agregar cualquier emisor que no esté en el orden predefinido
-    Object.keys(issuerGroups).forEach(issuer => {
-      if (!orderedIssuerGroups[issuer]) {
-        orderedIssuerGroups[issuer] = issuerGroups[issuer]
-      }
-    })
+    if (isOrderedCategory) {
+      const issuerOrder = ['Posgrado', 'Profesional', 'PrepaTEC', 'Educación Continua']
+      const orderedIssuerGroups = {}
 
-    return orderedIssuerGroups
+      issuerOrder.forEach(issuer => {
+        if (issuerGroups[issuer]) {
+          orderedIssuerGroups[issuer] = issuerGroups[issuer]
+        }
+      })
+
+      // Agregar cualquier emisor que no esté en el orden predefinido
+      Object.keys(issuerGroups).forEach(issuer => {
+        if (!orderedIssuerGroups[issuer]) {
+          orderedIssuerGroups[issuer] = issuerGroups[issuer]
+        }
+      })
+
+      return orderedIssuerGroups
+    }
+
+    // Para "Otras" y "Vencidas", devolver grupos sin orden específico
+    return issuerGroups
   }
 
   if (!isLoggedIn) {
@@ -759,63 +766,135 @@ function App() {
                 </div>
               </div>
 
-              <div className="modal-actions">
-                <button
-                  className="btn-primary btn-verify"
-                  onClick={handleVerify}
-                  disabled={isVerifying}
-                >
-                  {isVerifying ? (
-                    <>
-                      <span className="verify-spinner"></span>
-                      {t.verifying}
-                    </>
-                  ) : verificationStatus && verificationStatus.includes('✓') ? (
-                    <>
-                      <span className="verify-check">✓</span>
-                      {t.verified}
-                    </>
-                  ) : (
-                    <>
-                      <span className="verify-icon">🔒</span>
-                      {t.verifyBadge}
-                    </>
-                  )}
-                </button>
-                <div className="share-button-container">
-                  <button
-                    className="btn-secondary"
-                    onClick={() => setShareMenuOpen(!shareMenuOpen)}
-                  >
-                    {t.share}
-                  </button>
-                  {shareMenuOpen && (
-                    <div className="share-dropdown">
+              {selectedCredential.degree_versions && (
+                <div className="degree-versions-section">
+                  <h3>{t.degreeVersions}</h3>
+                  <div className="degree-versions-grid">
+                    {/* Versión Blockchain */}
+                    <div className="degree-version-card">
+                      <div className="version-header">
+                        <h4>{language === 'en' ? selectedCredential.degree_versions.blockchain.name_en : selectedCredential.degree_versions.blockchain.name}</h4>
+                        <span className="version-badge blockchain">Blockchain</span>
+                      </div>
+                      <p className="version-description">
+                        {language === 'en' ? selectedCredential.degree_versions.blockchain.description_en : selectedCredential.degree_versions.blockchain.description}
+                      </p>
+                      <div className="version-recommendation">
+                        <span className="recommendation-icon">💼</span>
+                        <span>{t.recommendedFor}: <strong>{t.employers}</strong></span>
+                      </div>
                       <button
-                        className="share-option"
-                        onClick={() => handleShare('download')}
+                        className="btn-download-version"
+                        onClick={() => {
+                          // Descargar ambos archivos
+                          const link1 = document.createElement('a');
+                          link1.href = selectedCredential.degree_versions.blockchain.files.pdf;
+                          link1.download = 'titulo_blockchain.pdf';
+                          link1.click();
+
+                          setTimeout(() => {
+                            const link2 = document.createElement('a');
+                            link2.href = selectedCredential.degree_versions.blockchain.files.json;
+                            link2.download = 'titulo_blockchain.json';
+                            link2.click();
+                          }, 500);
+                        }}
                       >
-                        <span className="share-icon">📥</span>
-                        {t.download}
+                        <span className="file-icon">📥</span>
+                        {t.downloadFiles}
                       </button>
                       <button
-                        className="share-option"
-                        onClick={() => handleShare('linkedin')}
+                        className="btn-verify-blockchain"
+                        onClick={handleVerify}
+                        disabled={isVerifying}
                       >
-                        <span className="share-icon">💼</span>
-                        LinkedIn
+                        {isVerifying ? (
+                          <>
+                            <span className="verify-spinner"></span>
+                            {t.verifying}
+                          </>
+                        ) : verificationStatus && verificationStatus.includes('✓') ? (
+                          <>
+                            <span className="verify-check">✓</span>
+                            {t.verified}
+                          </>
+                        ) : (
+                          <>
+                            <span className="verify-icon">🔒</span>
+                            {t.verifyBadge}
+                          </>
+                        )}
                       </button>
                       <button
-                        className="share-option"
-                        onClick={() => handleShare('linkedin-profile')}
+                        className="btn-share-blockchain"
+                        onClick={() => setShareMenuOpen(!shareMenuOpen)}
                       >
-                        <span className="share-icon">👤</span>
-                        LinkedIn Profile
+                        <span className="share-icon">📤</span>
+                        {t.share}
                       </button>
+                      {shareMenuOpen && (
+                        <div className="share-dropdown-blockchain">
+                          <button
+                            className="share-option"
+                            onClick={() => handleShare('linkedin')}
+                          >
+                            <span className="share-icon">💼</span>
+                            LinkedIn
+                          </button>
+                          <button
+                            className="share-option"
+                            onClick={() => handleShare('linkedin-profile')}
+                          >
+                            <span className="share-icon">👤</span>
+                            LinkedIn Profile
+                          </button>
+                        </div>
+                      )}
+                      <div className="version-validity">
+                        <small>{language === 'en' ? selectedCredential.degree_versions.blockchain.validity_en : selectedCredential.degree_versions.blockchain.validity}</small>
+                      </div>
                     </div>
-                  )}
+
+                    {/* Versión SEP */}
+                    <div className="degree-version-card">
+                      <div className="version-header">
+                        <h4>{language === 'en' ? selectedCredential.degree_versions.sep.name_en : selectedCredential.degree_versions.sep.name}</h4>
+                        <span className="version-badge sep">SEP</span>
+                      </div>
+                      <p className="version-description">
+                        {language === 'en' ? selectedCredential.degree_versions.sep.description_en : selectedCredential.degree_versions.sep.description}
+                      </p>
+                      <div className="version-recommendation">
+                        <span className="recommendation-icon">📋</span>
+                        <span>{t.recommendedFor}: <strong>{t.officialProcedures}</strong></span>
+                      </div>
+                      <button
+                        className="btn-download-version"
+                        onClick={() => {
+                          // Descargar ambos archivos
+                          const link1 = document.createElement('a');
+                          link1.href = selectedCredential.degree_versions.sep.files.pdf;
+                          link1.download = 'titulo_sep.pdf';
+                          link1.click();
+
+                          setTimeout(() => {
+                            const link2 = document.createElement('a');
+                            link2.href = selectedCredential.degree_versions.sep.files.xml;
+                            link2.download = 'titulo_sep.xml';
+                            link2.click();
+                          }, 500);
+                        }}
+                      >
+                        <span className="file-icon">📥</span>
+                        {t.downloadFiles}
+                      </button>
+                      <div className="version-validity official">
+                        <small>{language === 'en' ? selectedCredential.degree_versions.sep.validity_en : selectedCredential.degree_versions.sep.validity}</small>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {verificationStatus && (
                 <div className="verification-status">

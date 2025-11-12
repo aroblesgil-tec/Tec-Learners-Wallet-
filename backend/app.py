@@ -30,7 +30,33 @@ CREDENTIALS = [
         "skills_en": ["Professional Training", "Comprehensive Competencies"],
         "hours": 0,
         "thumbnail": "http://localhost:5173/titulo.png",
-        "category": "Títulos"
+        "category": "Títulos",
+        "degree_versions": {
+            "blockchain": {
+                "name": "Título Blockchain",
+                "name_en": "Blockchain Degree",
+                "description": "Versión en blockchain (Blockcerts). Recomendado para empleadores.",
+                "description_en": "Blockchain version (Blockcerts). Recommended for employers.",
+                "files": {
+                    "pdf": "http://localhost:5173/titulo_blockchain.pdf",
+                    "json": "http://localhost:5173/titulo_blockchain.json"
+                },
+                "validity": "No tiene validez oficial ante la SEP",
+                "validity_en": "Not officially valid with SEP"
+            },
+            "sep": {
+                "name": "Título Digital SEP",
+                "name_en": "SEP Digital Degree",
+                "description": "Versión oficial digital para la SEP. Recomendado para trámites oficiales.",
+                "description_en": "Official SEP digital version. Recommended for official procedures.",
+                "files": {
+                    "pdf": "http://localhost:5173/titulo_sep.pdf",
+                    "xml": "http://localhost:5173/titulo_sep.xml"
+                },
+                "validity": "Validez oficial ante la SEP",
+                "validity_en": "Officially valid with SEP"
+            }
+        }
     },
 
     # Curriculares
@@ -55,7 +81,7 @@ CREDENTIALS = [
         "title": "Publicidad: estrategia creativa y producción",
         "title_en": "Advertising: Creative Strategy and Production",
         "type": "microcredential",
-        "issuer": "PrepaTEC",
+        "issuer": "Profesional",
         "issuer_logo": "http://localhost:5173/logo_tec.png",
         "issue_date": "2024-05-20",
         "description": "Desarrollo de estrategias creativas y producción de contenido publicitario efectivo.",
