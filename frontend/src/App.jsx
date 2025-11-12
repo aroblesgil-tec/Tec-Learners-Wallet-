@@ -551,7 +551,6 @@ function App() {
                   <div className="user-name">Juan Díaz</div>
                   <div className="user-email">juan.diaz@tec.mx</div>
                 </div>
-                <div className="dropdown-divider"></div>
                 <button className="dropdown-item">
                   {t.myProfile}
                 </button>
@@ -575,15 +574,13 @@ function App() {
                       className={`language-option ${language === 'es' ? 'active' : ''}`}
                       onClick={() => language !== 'es' && toggleLanguage()}
                     >
-                      <span className="flag">🇪🇸</span>
                       <span className="lang-name">Español</span>
                     </button>
                     <button
                       className={`language-option ${language === 'en' ? 'active' : ''}`}
                       onClick={() => language !== 'en' && toggleLanguage()}
                     >
-                      <span className="flag">🇺🇸</span>
-                      <span className="lang-name">English</span>
+                      <span className="lang-name">Inglés</span>
                     </button>
                   </div>
                 </div>
