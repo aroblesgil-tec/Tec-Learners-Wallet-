@@ -2,11 +2,17 @@ import { useState } from 'react'
 import './Login.css'
 
 function Login({ onLogin }) {
+  const getImagePath = (path) => {
+    if (!path) return path
+    const base = import.meta.env.BASE_URL
+    return path.startsWith('http') ? path : `${base}${path}`
+  }
+
   return (
     <div className="login-page">
       <div className="login-container">
         <div className="login-header">
-          <img src="/logo_tec.png" alt="Tecnológico de Monterrey" className="login-logo" />
+          <img src={getImagePath("logo_tec.png")} alt="Tecnológico de Monterrey" className="login-logo" />
           <h1>Tec Learners Wallet</h1>
           <p className="login-subtitle">Gestiona y comparte tus credenciales académicas</p>
         </div>
