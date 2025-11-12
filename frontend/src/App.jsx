@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import Login from './Login'
 import { translations } from './translations'
+import CREDENTIALS_DATA from './data/credentials.json'
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -73,16 +74,10 @@ function App() {
   }, [isLoggedIn])
 
   const fetchCredentials = async () => {
-    try {
-      const response = await fetch('http://localhost:8000/api/credentials')
-      const data = await response.json()
-      setAllCredentials(data.credentials)
-      setCredentials(data.credentials)
-      setLoading(false)
-    } catch (error) {
-      console.error('Error fetching credentials:', error)
-      setLoading(false)
-    }
+    // Load credentials directly from imported data
+    setAllCredentials(CREDENTIALS_DATA)
+    setCredentials(CREDENTIALS_DATA)
+    setLoading(false)
   }
 
   const handleCategoryChange = (category) => {
@@ -225,13 +220,18 @@ function App() {
   }
 
   const fetchStats = async () => {
-    try {
-      const response = await fetch('http://localhost:8000/api/stats')
-      const data = await response.json()
-      setStats(data)
-    } catch (error) {
-      console.error('Error fetching stats:', error)
-    }
+    // Calculate stats directly from imported data
+    const total_credentials = CREDENTIALS_DATA.length
+    const microcredentials = CREDENTIALS_DATA.filter(c => c.type === "microcredential").length
+    const degrees = CREDENTIALS_DATA.filter(c => c.type === "degree").length
+    const total_hours = CREDENTIALS_DATA.reduce((sum, c) => sum + (c.hours || 0), 0)
+
+    setStats({
+      total_credentials,
+      microcredentials,
+      degrees,
+      total_hours
+    })
   }
 
   const openCredentialDetail = (credential) => {
@@ -636,7 +636,6 @@ function App() {
         {credentials.length === 0 ? (
           <div style={{ textAlign: 'center', color: '#2d3748', padding: '3rem' }}>
             <h2>{t.noCredentials}</h2>
-            <p>{t.backendWarning}</p>
           </div>
         ) : (
           <div className="shelves-container">

@@ -8,7 +8,9 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(python -m uvicorn:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(if exist backend rmdir /s /q backend)",
+      "Bash(git rm:*)"
     ],
     "deny": [],
     "ask": []
