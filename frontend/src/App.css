@@ -96,12 +96,17 @@ html, body {
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   min-width: 260px;
-  max-height: 80vh;
+  max-height: 75vh;
   overflow-y: auto;
+  overflow-x: hidden;
   z-index: 1000;
   animation: slideDown 0.2s ease;
+  scrollbar-width: none;
+}
+
+.user-dropdown:hover {
   scrollbar-width: thin;
-  scrollbar-color: #cbd5e0 #f1f1f1;
+  scrollbar-color: rgba(0, 51, 160, 0.3) transparent;
 }
 
 .user-dropdown::-webkit-scrollbar {
@@ -109,17 +114,21 @@ html, body {
 }
 
 .user-dropdown::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
+  background: transparent;
 }
 
 .user-dropdown::-webkit-scrollbar-thumb {
-  background: #cbd5e0;
+  background: transparent;
   border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+.user-dropdown:hover::-webkit-scrollbar-thumb {
+  background: rgba(0, 51, 160, 0.3);
 }
 
 .user-dropdown::-webkit-scrollbar-thumb:hover {
-  background: #a0aec0;
+  background: rgba(0, 51, 160, 0.5) !important;
 }
 
 @keyframes slideDown {
@@ -178,31 +187,32 @@ html, body {
 }
 
 .language-selector {
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1.5rem;
 }
 
 .language-label {
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: #718096;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
 }
 
 .language-options {
   display: flex;
-  gap: 0.4rem;
+  gap: 0.35rem;
 }
 
 .language-option {
   flex: 1;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 0.3rem;
-  padding: 0.5rem 0.4rem;
-  border: 2px solid #e2e8f0;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.6rem;
+  border: 1.5px solid #e2e8f0;
   border-radius: 6px;
   background: white;
   cursor: pointer;
@@ -219,16 +229,18 @@ html, body {
   border-color: #0033a0;
   background: linear-gradient(135deg, #0033a0 0%, #003d82 100%);
   color: white;
-  box-shadow: 0 4px 12px rgba(0, 51, 160, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 51, 160, 0.25);
 }
 
 .language-option .flag {
-  font-size: 1.25rem;
+  font-size: 1rem;
+  line-height: 1;
 }
 
 .language-option .lang-name {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
+  line-height: 1;
 }
 
 .language-option.active .lang-name {
@@ -587,6 +599,10 @@ html, body {
   padding: 0 2rem 4rem;
 }
 
+.main-content.with-bottom-bar {
+  padding-bottom: 8rem;
+}
+
 .shelves-container {
   display: flex;
   flex-direction: column;
@@ -907,6 +923,34 @@ html, body {
   padding: 2rem;
   max-height: 90vh;
   overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.modal-layout:hover {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 51, 160, 0.3) transparent;
+}
+
+.modal-layout::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-layout::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-layout::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+.modal-layout:hover::-webkit-scrollbar-thumb {
+  background: rgba(0, 51, 160, 0.3);
+}
+
+.modal-layout::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 51, 160, 0.5) !important;
 }
 
 .modal-left {
@@ -1540,11 +1584,24 @@ html, body {
   background: linear-gradient(135deg, #0033a0 0%, #003d82 100%);
   color: white;
   padding: 1rem 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  position: sticky;
-  top: 0;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   z-index: 200;
-  animation: slideDown 0.3s ease;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .selection-mode-content {
@@ -1584,6 +1641,7 @@ html, body {
   border-color: white;
 }
 
+.btn-download-clr,
 .btn-generate-link {
   padding: 0.75rem 1.5rem;
   background: white;
@@ -1596,11 +1654,13 @@ html, body {
   transition: all 0.3s ease;
 }
 
+.btn-download-clr:hover:not(:disabled),
 .btn-generate-link:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
 }
 
+.btn-download-clr:disabled,
 .btn-generate-link:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -2037,6 +2097,7 @@ html, body {
   }
 
   .btn-cancel-selection,
+  .btn-download-clr,
   .btn-generate-link {
     width: 100%;
     padding: 0.75rem 1.25rem;
@@ -2127,5 +2188,279 @@ html, body {
   .dropdown-item {
     padding: 0.75rem 1.25rem;
     font-size: 0.9rem;
+  }
+}
+
+/* Upload Modal Styles */
+.upload-modal {
+  max-width: 520px;
+  width: 90%;
+  overflow: visible;
+}
+
+.upload-modal .modal-header {
+  background: linear-gradient(135deg, #0065AE 0%, #004c8a 100%);
+  color: white;
+  padding: 1.15rem 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: none;
+}
+
+.upload-modal .modal-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: white;
+}
+
+.upload-modal .close-modal {
+  position: static;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  font-weight: 300;
+  line-height: 1;
+  padding: 0;
+}
+
+.upload-modal .close-modal:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.upload-modal .modal-body {
+  padding: 1.35rem 1.75rem;
+}
+
+.upload-description {
+  color: #333;
+  font-size: 0.825rem;
+  margin-bottom: 1.15rem;
+  text-align: left;
+  line-height: 1.4;
+}
+
+.upload-dropzone {
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  padding: 1.5rem 1.25rem;
+  text-align: center;
+  background: linear-gradient(to bottom, #ffffff, #f9fafb);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 0.85rem;
+  position: relative;
+}
+
+.upload-dropzone:hover {
+  border-color: #0065AE;
+  background: linear-gradient(to bottom, #f0f9ff, #e0f2fe);
+}
+
+.upload-dropzone.drag-active {
+  border-color: #0065AE;
+  background: linear-gradient(to bottom, #dbeafe, #bfdbfe);
+  border-style: solid;
+  box-shadow: 0 0 0 4px rgba(0, 101, 174, 0.1);
+}
+
+.upload-dropzone.has-file {
+  border-color: #10b981;
+  background: linear-gradient(to bottom, #f0fdf4, #dcfce7);
+}
+
+.upload-icon {
+  width: 40px;
+  height: 40px;
+  color: #6b7280;
+  margin: 0 auto 0.65rem;
+  stroke-width: 1.5;
+}
+
+.file-icon {
+  width: 40px;
+  height: 40px;
+  color: #10b981;
+  margin: 0 auto 0.65rem;
+}
+
+.upload-text {
+  color: #6b7280;
+  font-size: 0.825rem;
+  margin-bottom: 0.65rem;
+  font-weight: 500;
+}
+
+.file-name {
+  color: #111827;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+  word-break: break-word;
+  padding: 0 1rem;
+}
+
+.file-size {
+  color: #6b7280;
+  font-size: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.btn-select-file,
+.btn-change-file {
+  background-color: transparent;
+  color: #0065AE;
+  border: 1px solid #0065AE;
+  padding: 0.45rem 1.1rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-select-file:hover {
+  background-color: #0065AE;
+  color: white;
+}
+
+.btn-change-file {
+  background-color: transparent;
+  border-color: #dc2626;
+  color: #dc2626;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.9rem;
+}
+
+.btn-change-file:hover {
+  background-color: #dc2626;
+  color: white;
+}
+
+.upload-info {
+  background-color: #fffbeb;
+  border: 1px solid #fde047;
+  padding: 0.65rem 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 0;
+}
+
+.info-text {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  color: #78716c;
+  font-size: 0.7rem;
+  margin-bottom: 0;
+  line-height: 1.35;
+}
+
+.info-icon {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #eab308;
+}
+
+.supported-formats {
+  color: #78716c;
+  font-size: 0.65rem;
+  margin: 0.3rem 0 0 0;
+  padding-left: 1.25rem;
+  font-style: italic;
+}
+
+.upload-modal .modal-footer {
+  padding: 0.85rem 1.75rem;
+  background-color: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 0.65rem;
+}
+
+.upload-modal .btn-primary {
+  background: linear-gradient(135deg, #0065AE 0%, #004c8a 100%);
+  padding: 0.55rem 1.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.upload-modal .btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #004c8a 0%, #003a6b 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 101, 174, 0.25);
+}
+
+.upload-modal .btn-secondary {
+  background-color: white;
+  border: 1px solid #d1d5db;
+  color: #6b7280;
+  padding: 0.55rem 1.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.upload-modal .btn-secondary:hover {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-primary:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.btn-primary:disabled:hover {
+  background: #d1d5db;
+  transform: none;
+  box-shadow: none;
+}
+
+@media (max-width: 768px) {
+  .upload-modal {
+    max-width: 95%;
+  }
+
+  .upload-modal .modal-body {
+    padding: 1.5rem;
+  }
+
+  .upload-dropzone {
+    padding: 2rem 1rem;
+  }
+
+  .upload-icon,
+  .file-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .upload-description {
+    font-size: 0.85rem;
+  }
+
+  .info-text {
+    font-size: 0.75rem;
+  }
+
+  .upload-modal .modal-footer {
+    padding: 1rem 1.5rem;
   }
 }

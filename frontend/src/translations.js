@@ -6,9 +6,10 @@ export const translations = {
     // User Menu
     myProfile: "Mi perfil",
     settings: "Configuración",
+    uploadCredential: "Subir credencial",
     downloadCredentials: "Descargar credenciales",
     notifications: "Notificaciones",
-    shareWithEmployer: "Compartir con empleador",
+    comprehensiveLearnerRecord: "CLR",
     logout: "Cerrar sesión",
     language: "Idioma",
 
@@ -39,12 +40,16 @@ export const translations = {
     microcredentials: "microcredenciales",
     titles: "títulos",
 
-    // Selection Mode
+    // Selection Mode / CLR
     credentialsSelected: "credencial",
     credentialsSelectedPlural: "es seleccionada",
     cancel: "Cancelar",
-    generateLink: "Generar link para compartir",
+    downloadCLR: "Descargar CLR",
+    shareWithLink: "Compartir con link",
     myCredentials: "Mis Credenciales",
+    clrTitle: "Comprehensive Learner Record",
+    clrDescription: "Selecciona las credenciales que deseas incluir en tu CLR",
+    selectCredentials: "Selecciona credenciales para continuar",
 
     // Modal
     clickToEnlarge: "Click para ampliar",
@@ -89,6 +94,16 @@ export const translations = {
     done: "Listo",
     linkCopied: "¡Link copiado al portapapeles!",
 
+    // Upload Modal
+    uploadCredentialTitle: "Subir Credencial",
+    uploadDescription: "Sube credenciales con el estándar Open Badges 3.0 o 2.0",
+    dragDropText: "Arrastra y suelta tu archivo aquí, o haz click para seleccionar",
+    supportedFormats: "Formatos soportados: JSON (.json)",
+    openBadgesInfo: "Solo se aceptan credenciales que cumplan con el estándar Open Badges 3.0 o 2.0",
+    selectFile: "Seleccionar archivo",
+    uploadButton: "Subir credencial",
+    cancel: "Cancelar",
+
     // Loading
     loading: "Cargando credenciales...",
     noCredentials: "No hay credenciales en esta categoría",
@@ -108,9 +123,10 @@ export const translations = {
     // User Menu
     myProfile: "My Profile",
     settings: "Settings",
+    uploadCredential: "Upload Credential",
     downloadCredentials: "Download Credentials",
     notifications: "Notifications",
-    shareWithEmployer: "Share with Employer",
+    comprehensiveLearnerRecord: "CLR",
     logout: "Log Out",
     language: "Language",
 
@@ -141,12 +157,16 @@ export const translations = {
     microcredentials: "microcredentials",
     titles: "degrees",
 
-    // Selection Mode
+    // Selection Mode / CLR
     credentialsSelected: "credential",
     credentialsSelectedPlural: "s selected",
     cancel: "Cancel",
-    generateLink: "Generate Sharing Link",
+    downloadCLR: "Download CLR",
+    shareWithLink: "Share with Link",
     myCredentials: "My Credentials",
+    clrTitle: "Comprehensive Learner Record",
+    clrDescription: "Select the credentials you want to include in your CLR",
+    selectCredentials: "Select credentials to continue",
 
     // Modal
     clickToEnlarge: "Click to enlarge",
@@ -190,6 +210,16 @@ export const translations = {
     close: "Close",
     done: "Done",
     linkCopied: "Link copied to clipboard!",
+
+    // Upload Modal
+    uploadCredentialTitle: "Upload Credential",
+    uploadDescription: "Upload credentials with Open Badges 3.0 or 2.0 standard",
+    dragDropText: "Drag and drop your file here, or click to select",
+    supportedFormats: "Supported formats: JSON (.json)",
+    openBadgesInfo: "Only credentials that comply with the Open Badges 3.0 or 2.0 standard are accepted",
+    selectFile: "Select file",
+    uploadButton: "Upload credential",
+    cancel: "Cancel",
 
     // Loading
     loading: "Loading credentials...",

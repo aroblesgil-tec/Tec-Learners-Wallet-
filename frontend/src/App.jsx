@@ -34,6 +34,9 @@ function App() {
   const [selectedCredentials, setSelectedCredentials] = useState([])
   const [shareModalOpen, setShareModalOpen] = useState(false)
   const [generatedLink, setGeneratedLink] = useState('')
+  const [uploadModalOpen, setUploadModalOpen] = useState(false)
+  const [dragActive, setDragActive] = useState(false)
+  const [selectedFile, setSelectedFile] = useState(null)
 
   const t = translations[language]
 
@@ -79,6 +82,19 @@ function App() {
       fetchStats()
     }
   }, [isLoggedIn])
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuOpen && !event.target.closest('.user-menu-container')) {
+        setUserMenuOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [userMenuOpen])
 
   const fetchCredentials = async () => {
     // Load credentials directly from imported data
@@ -224,6 +240,113 @@ function App() {
   const copyLinkToClipboard = () => {
     navigator.clipboard.writeText(generatedLink)
     alert(t.linkCopied)
+  }
+
+  const downloadCLR = () => {
+    if (selectedCredentials.length === 0) return
+
+    // Create CLR JSON following 1EdTech CLR standard structure
+    const clr = {
+      "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://purl.imsglobal.org/spec/clr/v2p0/context.json"
+      ],
+      "type": ["VerifiableCredential", "ClrCredential"],
+      "id": `urn:uuid:${crypto.randomUUID()}`,
+      "issuer": {
+        "id": "https://www.tec.mx",
+        "type": "Profile",
+        "name": "Tecnológico de Monterrey"
+      },
+      "issuanceDate": new Date().toISOString(),
+      "credentialSubject": {
+        "id": "urn:uuid:student-" + Math.random().toString(36).substring(2, 15),
+        "type": "ClrSubject",
+        "verifiableCredential": selectedCredentials.map(cred => ({
+          "@context": "https://www.w3.org/2018/credentials/v1",
+          "id": `urn:uuid:${cred.id}`,
+          "type": ["VerifiableCredential", "OpenBadgeCredential"],
+          "name": cred.title,
+          "description": cred.description,
+          "image": cred.thumbnail,
+          "issuer": {
+            "id": "https://www.tec.mx",
+            "type": "Profile",
+            "name": cred.issuer
+          },
+          "issuanceDate": cred.issue_date,
+          "credentialSubject": {
+            "type": "AchievementSubject",
+            "achievement": {
+              "type": "Achievement",
+              "name": cred.title,
+              "description": cred.description,
+              "criteria": {
+                "narrative": cred.description
+              }
+            }
+          }
+        }))
+      }
+    }
+
+    // Create and download JSON file
+    const dataStr = JSON.stringify(clr, null, 2)
+    const dataBlob = new Blob([dataStr], { type: 'application/json' })
+    const url = URL.createObjectURL(dataBlob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `CLR-TecLearners-${new Date().toISOString().split('T')[0]}.json`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+
+    // Close selection mode
+    setSelectionMode(false)
+    setSelectedCredentials([])
+  }
+
+  const handleDrag = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true)
+    } else if (e.type === "dragleave") {
+      setDragActive(false)
+    }
+  }
+
+  const handleDrop = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setDragActive(false)
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      const file = e.dataTransfer.files[0]
+      if (file.type === "application/json") {
+        setSelectedFile(file)
+      }
+    }
+  }
+
+  const handleFileSelect = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0]
+      if (file.type === "application/json") {
+        setSelectedFile(file)
+      }
+    }
+  }
+
+  const handleUploadCredential = () => {
+    if (selectedFile) {
+      // For now, just close the modal and show alert
+      // In the future, this will process the Open Badge file
+      alert(`File "${selectedFile.name}" ready to upload. Functionality coming soon!`)
+      setUploadModalOpen(false)
+      setSelectedFile(null)
+    }
   }
 
   const fetchStats = async () => {
@@ -435,8 +558,11 @@ function App() {
                 <button className="dropdown-item">
                   {t.settings}
                 </button>
-                <button className="dropdown-item">
-                  {t.downloadCredentials}
+                <button className="dropdown-item" onClick={() => {
+                  setUploadModalOpen(true)
+                  setUserMenuOpen(false)
+                }}>
+                  {t.uploadCredential}
                 </button>
                 <button className="dropdown-item">
                   {t.notifications}
@@ -463,7 +589,7 @@ function App() {
                 </div>
                 <div className="dropdown-divider"></div>
                 <button className="dropdown-item" onClick={toggleSelectionMode}>
-                  {t.shareWithEmployer}
+                  {t.comprehensiveLearnerRecord}
                 </button>
                 <div className="dropdown-divider"></div>
                 <button className="dropdown-item logout">
@@ -617,29 +743,7 @@ function App() {
         </div>
       )}
 
-      {selectionMode && (
-        <div className="selection-mode-banner">
-          <div className="selection-mode-content">
-            <span className="selection-count">
-              {selectedCredentials.length} {t.credentialsSelected}{selectedCredentials.length !== 1 ? t.credentialsSelectedPlural : ''}
-            </span>
-            <div className="selection-actions">
-              <button className="btn-cancel-selection" onClick={toggleSelectionMode}>
-                {t.cancel}
-              </button>
-              <button
-                className="btn-generate-link"
-                onClick={generateShareLink}
-                disabled={selectedCredentials.length === 0}
-              >
-                {t.generateLink}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <main className="main-content">
+      <main className={`main-content ${selectionMode ? 'with-bottom-bar' : ''}`}>
         {credentials.length === 0 ? (
           <div style={{ textAlign: 'center', color: '#2d3748', padding: '3rem' }}>
             <h2>{t.noCredentials}</h2>
@@ -980,6 +1084,144 @@ function App() {
                   {t.done}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Upload Credential Modal */}
+      {uploadModalOpen && (
+        <div className="modal-overlay" onClick={() => {
+          setUploadModalOpen(false)
+          setSelectedFile(null)
+          setDragActive(false)
+        }}>
+          <div className="modal-content upload-modal" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>{t.uploadCredentialTitle}</h2>
+              <button className="close-modal" onClick={() => {
+                setUploadModalOpen(false)
+                setSelectedFile(null)
+                setDragActive(false)
+              }}>✕</button>
+            </div>
+
+            <div className="modal-body">
+              <p className="upload-description">{t.uploadDescription}</p>
+
+              <div
+                className={`upload-dropzone ${dragActive ? 'drag-active' : ''} ${selectedFile ? 'has-file' : ''}`}
+                onDragEnter={handleDrag}
+                onDragLeave={handleDrag}
+                onDragOver={handleDrag}
+                onDrop={handleDrop}
+                onClick={() => document.getElementById('file-upload-input').click()}
+              >
+                <input
+                  type="file"
+                  id="file-upload-input"
+                  accept=".json,application/json"
+                  onChange={handleFileSelect}
+                  style={{ display: 'none' }}
+                />
+
+                {!selectedFile ? (
+                  <>
+                    <svg className="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="17 8 12 3 7 8" />
+                      <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                    <p className="upload-text">{t.dragDropText}</p>
+                    <button className="btn-select-file" type="button">
+                      {t.selectFile}
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <svg className="file-icon" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" />
+                      <path d="M14 2v6h6" />
+                      <path d="M12 18v-6" />
+                      <path d="M9 15l3 3 3-3" />
+                    </svg>
+                    <p className="file-name">{selectedFile.name}</p>
+                    <p className="file-size">{(selectedFile.size / 1024).toFixed(2)} KB</p>
+                    <button
+                      className="btn-change-file"
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setSelectedFile(null)
+                      }}
+                    >
+                      {t.cancel}
+                    </button>
+                  </>
+                )}
+              </div>
+
+              <div className="upload-info">
+                <p className="info-text">
+                  <svg className="info-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M12 16v-4" stroke="white" strokeWidth="2" />
+                    <circle cx="12" cy="8" r="1" fill="white" />
+                  </svg>
+                  {t.openBadgesInfo}
+                </p>
+                <p className="supported-formats">{t.supportedFormats}</p>
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button
+                className="btn-secondary"
+                onClick={() => {
+                  setUploadModalOpen(false)
+                  setSelectedFile(null)
+                  setDragActive(false)
+                }}
+              >
+                {t.cancel}
+              </button>
+              <button
+                className="btn-primary"
+                onClick={handleUploadCredential}
+                disabled={!selectedFile}
+              >
+                {t.uploadButton}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Selection Mode Banner - Bottom Sticky */}
+      {selectionMode && (
+        <div className="selection-mode-banner">
+          <div className="selection-mode-content">
+            <span className="selection-count">
+              {selectedCredentials.length} {t.credentialsSelected}{selectedCredentials.length !== 1 ? t.credentialsSelectedPlural : ''}
+            </span>
+            <div className="selection-actions">
+              <button className="btn-cancel-selection" onClick={toggleSelectionMode}>
+                {t.cancel}
+              </button>
+              <button
+                className="btn-download-clr"
+                onClick={downloadCLR}
+                disabled={selectedCredentials.length === 0}
+              >
+                {t.downloadCLR}
+              </button>
+              <button
+                className="btn-generate-link"
+                onClick={generateShareLink}
+                disabled={selectedCredentials.length === 0}
+              >
+                {t.shareWithLink}
+              </button>
             </div>
           </div>
         </div>
