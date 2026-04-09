@@ -1,0 +1,181 @@
+[
+  {
+    "id": "clr-1",
+    "name": "Trayectoria en Inteligencia Artificial",
+    "name_en": "Artificial Intelligence Learning Path",
+    "description": "Registro integral de aprendizaje que documenta la trayectoria completa en Inteligencia Artificial, desde fundamentos de datos hasta IA generativa avanzada.",
+    "description_en": "Comprehensive learning record documenting the complete Artificial Intelligence learning path, from data fundamentals to advanced generative AI.",
+    "status": "active",
+    "origin": "Tec",
+    "issue_date": "2025-02-01",
+    "expiration_date": null,
+    "award_date": "2025-01-28",
+    "partial": false,
+    "credential_ids": ["5", "15", "20"],
+    "issuer": {
+      "name": "Tecnológico de Monterrey",
+      "description": "El Tecnológico de Monterrey es una universidad privada, sin fines de lucro, fundada en 1943.",
+      "description_en": "Tecnológico de Monterrey is a private, non-profit university founded in 1943.",
+      "logo": "logo_tec.png",
+      "url": "https://tec.mx",
+      "email": "info@tec.mx",
+      "phone": "+52 81 8358 2000",
+      "address": "Av. Eugenio Garza Sada 2501, Monterrey, NL, México"
+    },
+    "receiver": {
+      "name": "Juan Díaz García",
+      "start_date": "2024-06-01",
+      "end_date": "2025-02-18",
+      "credits_earned": 16,
+      "academic_period": "Junio 2024 - Febrero 2025",
+      "role": "Estudiante"
+    },
+    "evidences": [
+      {"name": "Portafolio de proyectos IA", "description": "Repositorio con todos los proyectos desarrollados durante la trayectoria", "url": "https://github.com/juandiaz/ai-portfolio"}
+    ],
+    "terms_of_use": "Este CLR es propiedad del Tecnológico de Monterrey y certifica la trayectoria completa del estudiante.",
+    "terms_of_use_en": "This CLR is property of Tecnológico de Monterrey and certifies the student's complete learning path."
+  },
+  {
+    "id": "clr-2",
+    "name": "Competencias de Ingeniería de Software",
+    "name_en": "Software Engineering Competencies",
+    "description": "Comprehensive Learner Record que agrupa las credenciales de desarrollo de software, incluyendo web, blockchain y cloud computing.",
+    "description_en": "Comprehensive Learner Record grouping software development credentials, including web, blockchain and cloud computing.",
+    "status": "active",
+    "origin": "Tec",
+    "issue_date": "2025-03-01",
+    "expiration_date": null,
+    "award_date": "2025-02-25",
+    "partial": false,
+    "credential_ids": ["4", "9", "20", "18"],
+    "issuer": {
+      "name": "Tecnológico de Monterrey",
+      "description": "El Tecnológico de Monterrey es una universidad privada, sin fines de lucro, fundada en 1943.",
+      "description_en": "Tecnológico de Monterrey is a private, non-profit university founded in 1943.",
+      "logo": "logo_tec.png",
+      "url": "https://tec.mx",
+      "email": "info@tec.mx",
+      "phone": "+52 81 8358 2000",
+      "address": "Av. Eugenio Garza Sada 2501, Monterrey, NL, México"
+    },
+    "receiver": {
+      "name": "Juan Díaz García",
+      "start_date": "2024-01-15",
+      "end_date": "2025-02-18",
+      "credits_earned": 20,
+      "academic_period": "Enero 2024 - Febrero 2025",
+      "role": "Estudiante"
+    },
+    "evidences": [],
+    "terms_of_use": "Este CLR es propiedad del Tecnológico de Monterrey.",
+    "terms_of_use_en": "This CLR is property of Tecnológico de Monterrey."
+  },
+  {
+    "id": "clr-3",
+    "name": "Habilidades de Liderazgo y Gestión",
+    "name_en": "Leadership and Management Skills",
+    "description": "Registro de aprendizaje que documenta el desarrollo de competencias de liderazgo, gestión de proyectos y habilidades directivas.",
+    "description_en": "Learning record documenting the development of leadership competencies, project management and management skills.",
+    "status": "active",
+    "origin": "Tec",
+    "issue_date": "2024-12-15",
+    "expiration_date": null,
+    "award_date": "2024-12-12",
+    "partial": true,
+    "credential_ids": ["6", "8", "16", "11"],
+    "issuer": {
+      "name": "Tecnológico de Monterrey",
+      "description": "El Tecnológico de Monterrey es una universidad privada, sin fines de lucro, fundada en 1943.",
+      "description_en": "Tecnológico de Monterrey is a private, non-profit university founded in 1943.",
+      "logo": "logo_tec.png",
+      "url": "https://tec.mx",
+      "email": "info@tec.mx",
+      "phone": "+52 81 8358 2000",
+      "address": "Av. Eugenio Garza Sada 2501, Monterrey, NL, México"
+    },
+    "receiver": {
+      "name": "Juan Díaz García",
+      "start_date": "2023-08-01",
+      "end_date": "2024-10-01",
+      "credits_earned": 27,
+      "academic_period": "Agosto 2023 - Octubre 2024",
+      "role": "Participante"
+    },
+    "evidences": [],
+    "terms_of_use": "Este CLR representa un registro parcial de la trayectoria del estudiante.",
+    "terms_of_use_en": "This CLR represents a partial record of the student's learning path."
+  },
+  {
+    "id": "clr-4",
+    "name": "Certificaciones Profesionales Externas",
+    "name_en": "External Professional Certifications",
+    "description": "Registro de certificaciones profesionales obtenidas a través de proveedores externos como IBM, Amazon y otros partners del Tec.",
+    "description_en": "Record of professional certifications obtained through external providers such as IBM, Amazon and other Tec partners.",
+    "status": "active",
+    "origin": "Externo",
+    "issue_date": "2025-01-01",
+    "expiration_date": null,
+    "award_date": "2024-12-28",
+    "partial": false,
+    "credential_ids": ["11", "12", "18"],
+    "issuer": {
+      "name": "Varios Emisores Externos",
+      "name_en": "Various External Issuers",
+      "description": "Credenciales emitidas por partners tecnológicos en colaboración con el Tec.",
+      "description_en": "Credentials issued by technology partners in collaboration with Tec.",
+      "logo": "logo_tec.png",
+      "url": "https://tec.mx",
+      "email": "partners@tec.mx"
+    },
+    "receiver": {
+      "name": "Juan Díaz García",
+      "start_date": "2023-11-01",
+      "end_date": "2024-09-28",
+      "credits_earned": 5,
+      "academic_period": "Noviembre 2023 - Septiembre 2024",
+      "role": "Estudiante"
+    },
+    "evidences": [],
+    "terms_of_use": "Las credenciales de este CLR fueron emitidas por entidades externas al Tec.",
+    "terms_of_use_en": "The credentials in this CLR were issued by entities external to Tec."
+  },
+  {
+    "id": "clr-5",
+    "name": "Trayectoria Completa Pregrado",
+    "name_en": "Complete Undergraduate Path",
+    "description": "Comprehensive Learner Record que documenta toda la trayectoria de pregrado del estudiante, incluyendo título profesional y todas las microcredenciales curriculares obtenidas.",
+    "description_en": "Comprehensive Learner Record documenting the student's entire undergraduate path, including professional degree and all curricular microcredentials obtained.",
+    "status": "active",
+    "origin": "Tec",
+    "issue_date": "2025-03-15",
+    "expiration_date": null,
+    "award_date": "2025-03-12",
+    "partial": false,
+    "credential_ids": ["1", "2", "3", "4", "5", "7", "9", "15", "19", "20", "22", "25"],
+    "issuer": {
+      "name": "Tecnológico de Monterrey",
+      "description": "El Tecnológico de Monterrey es una universidad privada, sin fines de lucro, fundada en 1943.",
+      "description_en": "Tecnológico de Monterrey is a private, non-profit university founded in 1943.",
+      "logo": "logo_tec.png",
+      "url": "https://tec.mx",
+      "email": "info@tec.mx",
+      "phone": "+52 81 8358 2000",
+      "address": "Av. Eugenio Garza Sada 2501, Monterrey, NL, México"
+    },
+    "receiver": {
+      "name": "Juan Díaz García",
+      "start_date": "2019-08-12",
+      "end_date": "2025-02-18",
+      "credits_earned": 458,
+      "license_number": "12345678",
+      "academic_period": "Agosto 2019 - Febrero 2025",
+      "role": "Estudiante"
+    },
+    "evidences": [
+      {"name": "Expediente académico completo", "description": "Historial académico verificado por servicios escolares", "url": "https://mitec.itesm.mx/expediente"}
+    ],
+    "terms_of_use": "Este CLR es el registro oficial de la trayectoria completa del estudiante en el Tecnológico de Monterrey.",
+    "terms_of_use_en": "This CLR is the official record of the student's complete path at Tecnológico de Monterrey."
+  }
+]
