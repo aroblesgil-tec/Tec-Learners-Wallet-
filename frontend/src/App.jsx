@@ -442,12 +442,6 @@ function App({ initialTab }) {
             </button>
             {userMenuOpen && (
               <div className="user-dropdown">
-                <div className="user-info">
-                  <div className="user-name">Juan Díaz</div>
-                  <div className="user-email">juan.diaz@tec.mx</div>
-                </div>
-                <button className="dropdown-item">{t.myProfile}</button>
-                <button className="dropdown-item">{t.settings}</button>
                 <button className="dropdown-item" onClick={() => { navigate('/verify'); setUserMenuOpen(false) }}>
                   {language === 'es' ? 'Verificador' : 'Verifier'}
                 </button>
@@ -465,10 +459,6 @@ function App({ initialTab }) {
                     </button>
                   </div>
                 </div>
-                <div className="dropdown-divider"></div>
-                <button className="dropdown-item logout" onClick={() => { setIsLoggedIn(false); localStorage.removeItem('wallet-logged-in') }}>
-                  {t.logout}
-                </button>
               </div>
             )}
           </div>

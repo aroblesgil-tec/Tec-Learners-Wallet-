@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { translations } from '../translations'
 import CREDENTIALS_DATA from '../data/credentials.json'
 import CLRS_DATA from '../data/clrs.json'
@@ -22,7 +22,10 @@ const Field = ({ label, value }) => {
 
 function PublicCLR() {
   const [language] = useState(() => localStorage.getItem('wallet-lang') || 'es')
+  const [verifying, setVerifying] = useState(false)
+  const [verificationResults, setVerificationResults] = useState(null)
   const { id } = useParams()
+  const navigate = useNavigate()
   const t = translations[language] || translations.es
 
   const clr = CLRS_DATA.find(c => c.id === id)
@@ -64,6 +67,39 @@ function PublicCLR() {
 
   const isTecIssuer = /Tec|Profesional|Posgrado|Tecnológico/i.test(clr.issuer?.name || '')
 
+  const verificationAreas = [
+    { key: 'signature', es: 'Firma digital', en: 'Digital Signature' },
+    { key: 'issuer', es: 'Emisor', en: 'Issuer' },
+    { key: 'integrity', es: 'Integridad', en: 'Integrity' },
+    { key: 'expiration', es: 'Vigencia', en: 'Expiration' }
+  ]
+
+  const handleVerify = () => {
+    setVerifying(true)
+    setVerificationResults(null)
+    setTimeout(() => {
+      const isValid = clr.status === 'active'
+      const isRevoked = clr.status === 'revoked'
+      setVerificationResults({
+        overall: isRevoked ? 'revoked' : isValid ? 'valid' : 'invalid',
+        timestamp: new Date().toLocaleString(language === 'es' ? 'es-MX' : 'en-US'),
+        areas: {
+          signature: true,
+          issuer: true,
+          integrity: !isRevoked,
+          expiration: isValid
+        }
+      })
+      setVerifying(false)
+    }, 3000)
+  }
+
+  const overallLabel = (status) => {
+    if (status === 'valid') return language === 'es' ? 'Válido' : 'Valid'
+    if (status === 'revoked') return language === 'es' ? 'Revocado' : 'Revoked'
+    return language === 'es' ? 'Inválido' : 'Invalid'
+  }
+
   return (
     <div className="dp-page">
       {/* Header */}
@@ -82,8 +118,9 @@ function PublicCLR() {
             <div className="dp-cred-grid">
               {containedCredentials.map(cred => {
                 const credTitle = language === 'en' && cred.title_en ? cred.title_en : cred.title
+                const route = cred.type === 'degree' ? `/public/title/${cred.id}` : `/public/credential/${cred.id}`
                 return (
-                  <div key={cred.id} className="dp-cred-preview">
+                  <div key={cred.id} className="dp-cred-preview" onClick={() => navigate(route)} style={{ cursor: 'pointer' }}>
                     <img src={getImagePath(cred.thumbnail)} alt={credTitle} className="dp-cred-preview__img" />
                     <div className="dp-cred-preview__info">
                       <h4 className="dp-cred-preview__name">{credTitle}</h4>
@@ -170,6 +207,38 @@ function PublicCLR() {
             <Field label={language === 'es' ? 'Direccion' : 'Address'} value={clr.issuer.address} />
           </div>
         )}
+
+        {/* Verification Card */}
+        <div className="dp-card">
+          <h2 className="dp-card__title">{language === 'es' ? 'Verificacion' : 'Verification'}</h2>
+          <button className="dp-verify-btn" onClick={handleVerify} disabled={verifying}>
+            {verifying ? (language === 'es' ? 'Verificando...' : 'Verifying...') : (language === 'es' ? 'Verificar CLR' : 'Verify CLR')}
+          </button>
+
+          {verificationResults && (
+            <div className="dp-verify-results">
+              <div className={`dp-verify-overall dp-verify-overall--${verificationResults.overall}`}>
+                <span className="dp-verify-overall__icon">
+                  {verificationResults.overall === 'valid' ? '✓' : '✕'}
+                </span>
+                <span className="dp-verify-overall__label">{overallLabel(verificationResults.overall)}</span>
+              </div>
+              <div className="dp-verify-areas">
+                {verificationAreas.map((area) => (
+                  <div key={area.key} className={`dp-verify-area ${verificationResults.areas[area.key] ? 'dp-verify-area--pass' : 'dp-verify-area--fail'}`}>
+                    <span className="dp-verify-area__name">{language === 'es' ? area.es : area.en}</span>
+                    <span className="dp-verify-area__result">
+                      {verificationResults.areas[area.key] ? '✓' : '✕'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="dp-verify-timestamp">
+                {language === 'es' ? 'Última verificación' : 'Last verification'}: {verificationResults.timestamp}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
