@@ -15,7 +15,7 @@ function CLRList({ language }) {
   const t = translations[language] || translations.es
   const [searchTerm, setSearchTerm] = useState('')
   const [filterOrigin, setFilterOrigin] = useState('all')
-  const [sortBy, setSortBy] = useState('recent')
+  const [groupBy, setGroupBy] = useState('origin')
   const [filtersOpen, setFiltersOpen] = useState(false)
 
   const credentialsMap = useMemo(() => {
@@ -47,29 +47,50 @@ function CLRList({ language }) {
       results = results.filter(clr => clr.origin === filterOrigin)
     }
 
-    if (sortBy === 'recent') {
-      results.sort((a, b) => new Date(b.issue_date) - new Date(a.issue_date))
-    } else if (sortBy === 'oldest') {
-      results.sort((a, b) => new Date(a.issue_date) - new Date(b.issue_date))
-    } else if (sortBy === 'az') {
-      results.sort((a, b) => {
-        const nameA = language === 'en' && a.name_en ? a.name_en : a.name
-        const nameB = language === 'en' && b.name_en ? b.name_en : b.name
-        return nameA.localeCompare(nameB)
-      })
-    } else if (sortBy === 'za') {
-      results.sort((a, b) => {
-        const nameA = language === 'en' && a.name_en ? a.name_en : a.name
-        const nameB = language === 'en' && b.name_en ? b.name_en : b.name
-        return nameB.localeCompare(nameA)
-      })
-    }
+    results.sort((a, b) => new Date(b.issue_date) - new Date(a.issue_date))
 
     return results
-  }, [searchTerm, filterOrigin, sortBy, language])
+  }, [searchTerm, filterOrigin, language])
 
-  const tecCLRs = filteredCLRs.filter(c => c.origin === 'Tec')
-  const externoCLRs = filteredCLRs.filter(c => c.origin === 'Externo')
+  const groupedCLRs = useMemo(() => {
+    if (groupBy === 'issuer') {
+      const groups = {}
+      const isTecIssuer = {}
+      filteredCLRs.forEach(clr => {
+        const key = clr.issuer?.name || (language === 'es' ? 'Sin emisor' : 'No issuer')
+        if (!groups[key]) {
+          groups[key] = []
+          isTecIssuer[key] = false
+        }
+        groups[key].push(clr)
+        if (clr.origin === 'Tec') isTecIssuer[key] = true
+      })
+      const tecKeys = Object.keys(groups).filter(k => isTecIssuer[k]).sort((a, b) => a.localeCompare(b))
+      const externalKeys = Object.keys(groups).filter(k => !isTecIssuer[k]).sort((a, b) => a.localeCompare(b))
+      const ordered = {}
+      tecKeys.forEach(k => { ordered[k] = groups[k] })
+      externalKeys.forEach(k => { ordered[k] = groups[k] })
+      return ordered
+    }
+    if (groupBy === 'year') {
+      const groups = {}
+      filteredCLRs.forEach(clr => {
+        const y = clr.issue_date ? new Date(clr.issue_date).getFullYear().toString() : (language === 'es' ? 'Sin fecha' : 'No date')
+        if (!groups[y]) groups[y] = []
+        groups[y].push(clr)
+      })
+      const ordered = {}
+      Object.keys(groups).sort((a, b) => Number(b) - Number(a)).forEach(k => { ordered[k] = groups[k] })
+      return ordered
+    }
+    // Default: origin (Tec primero, Externo después)
+    const ordered = {}
+    const tec = filteredCLRs.filter(c => c.origin === 'Tec')
+    const ext = filteredCLRs.filter(c => c.origin === 'Externo')
+    if (tec.length > 0) ordered['Tec'] = tec
+    if (ext.length > 0) ordered[language === 'es' ? 'Externo' : 'External'] = ext
+    return ordered
+  }, [filteredCLRs, groupBy, language])
 
   const statusLabel = (status) => {
     if (status === 'active') return language === 'es' ? 'Activo' : 'Active'
@@ -104,7 +125,6 @@ function CLRList({ language }) {
           <div className="clr-mosaic">
             {slots}
           </div>
-          <span className={`cred-card__status-dot cred-card__status-dot--${status}`}></span>
         </div>
         <div className="cred-card__info">
           <h3 className="cred-card__name">{name}</h3>
@@ -155,11 +175,25 @@ function CLRList({ language }) {
           <span className="wallet-toolbar__search-icon">🔍</span>
         </div>
 
-        {/* Row 2: Filters button (50%) + Import button (50%) */}
+        {/* Row 2: Filters button (left) + Arrange dropdown (right) */}
         <div className="wallet-toolbar__actions">
           <button className="wallet-toolbar__filters-btn" onClick={() => setFiltersOpen(!filtersOpen)}>
             <span>⚙️</span> {t.filters || (language === 'es' ? 'Filtros' : 'Filters')}
           </button>
+          <select
+            value={groupBy}
+            onChange={(e) => setGroupBy(e.target.value)}
+            className="wallet-toolbar__group-select"
+            aria-label={t.arrangeBy}
+          >
+            <option value="origin">{t.arrangeBy}: {t.arrangeByOrigin}</option>
+            <option value="issuer">{t.arrangeBy}: {t.arrangeByIssuer}</option>
+            <option value="year">{t.arrangeBy}: {t.arrangeByYear}</option>
+          </select>
+        </div>
+
+        {/* Row 3: Import button full width */}
+        <div className="wallet-toolbar__import-row">
           <button className="wallet-toolbar__import-btn" onClick={() => alert(language === 'es' ? 'Importación simulada' : 'Simulated import')}>
             + {language === 'es' ? 'Importar' : 'Import'}
           </button>
@@ -173,12 +207,6 @@ function CLRList({ language }) {
                 <option value="all">{language === 'es' ? 'Todos los orígenes' : 'All origins'}</option>
                 <option value="Tec">Tec</option>
                 <option value="Externo">{language === 'es' ? 'Externo' : 'External'}</option>
-              </select>
-              <select className="wallet-toolbar__select" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-                <option value="recent">{t.mostRecent || 'Most Recent'}</option>
-                <option value="oldest">{t.oldest || 'Oldest'}</option>
-                <option value="az">A-Z</option>
-                <option value="za">Z-A</option>
               </select>
             </div>
           </div>
@@ -200,20 +228,7 @@ function CLRList({ language }) {
           </div>
         ) : (
           <div className="shelves-container">
-            {filterOrigin === 'all' ? (
-              <>
-                {renderSection('Tec', tecCLRs)}
-                {renderSection(language === 'es' ? 'Externo' : 'External', externoCLRs)}
-              </>
-            ) : (
-              <div className="shelf-section">
-                <div className="shelf">
-                  <div className="shelf-items">
-                    {filteredCLRs.map(renderCLRCard)}
-                  </div>
-                </div>
-              </div>
-            )}
+            {Object.entries(groupedCLRs).map(([groupName, clrs]) => renderSection(groupName, clrs))}
           </div>
         )}
       </main>

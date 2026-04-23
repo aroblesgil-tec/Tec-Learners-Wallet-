@@ -27,7 +27,7 @@ function App({ initialTab }) {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedIssuer, setSelectedIssuer] = useState('Todos')
   const [selectedYear, setSelectedYear] = useState('Todos')
-  const [sortBy, setSortBy] = useState('Más reciente')
+  const [groupBy, setGroupBy] = useState('type')
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [selectionMode, setSelectionMode] = useState(false)
   const [selectedCredentials, setSelectedCredentials] = useState([])
@@ -69,14 +69,7 @@ function App({ initialTab }) {
       'Vencidas': 'Expired', 'Expired': 'Vencidas'
     }
 
-    const sortMap = {
-      'Más reciente': 'Most Recent', 'Most Recent': 'Más reciente',
-      'Más antiguo': 'Oldest', 'Oldest': 'Más antiguo',
-      'A-Z': 'A-Z', 'Z-A': 'Z-A'
-    }
-
     setSelectedCategory(categoryMap[selectedCategory] || (newLang === 'es' ? 'Todas' : 'All'))
-    setSortBy(sortMap[sortBy] || (newLang === 'es' ? 'Más reciente' : 'Most Recent'))
     setSelectedIssuer(newLang === 'es' ? 'Todos' : 'All')
     setSelectedYear(newLang === 'es' ? 'Todos' : 'All')
   }
@@ -97,6 +90,19 @@ function App({ initialTab }) {
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [userMenuOpen])
+
+  // Reset filters and arrangement to default each time the user enters the credentials view
+  useEffect(() => {
+    if (activeTab !== 'credentials') return
+    const allCatLabel = language === 'es' ? 'Todas' : 'All'
+    const allLabel = language === 'es' ? 'Todos' : 'All'
+    setSelectedCategory(allCatLabel)
+    setSelectedIssuer(allLabel)
+    setSelectedYear(allLabel)
+    setSearchTerm('')
+    setGroupBy('type')
+    setFiltersOpen(false)
+  }, [activeTab, language])
 
   // Reset shelf scroll to start when shelf goes off screen
   const shelvesRef = useRef(null)
@@ -124,10 +130,10 @@ function App({ initialTab }) {
 
   const handleCategoryChange = (category) => {
     setSelectedCategory(category)
-    applyFilters(category, searchTerm, selectedIssuer, selectedYear, sortBy)
+    applyFilters(category, searchTerm, selectedIssuer, selectedYear)
   }
 
-  const applyFilters = (category, search, issuer, year, sort) => {
+  const applyFilters = (category, search, issuer, year) => {
     let filtered = [...allCredentials]
 
     if (category !== 'Todas' && category !== 'All') {
@@ -155,37 +161,24 @@ function App({ initialTab }) {
       )
     }
 
-    if (sort === 'Más reciente' || sort === 'Most Recent') {
-      filtered.sort((a, b) => new Date(b.issue_date) - new Date(a.issue_date))
-    } else if (sort === 'Más antiguo' || sort === 'Oldest') {
-      filtered.sort((a, b) => new Date(a.issue_date) - new Date(b.issue_date))
-    } else if (sort === 'A-Z') {
-      filtered.sort((a, b) => a.title.localeCompare(b.title))
-    } else if (sort === 'Z-A') {
-      filtered.sort((a, b) => b.title.localeCompare(a.title))
-    }
+    filtered.sort((a, b) => new Date(b.issue_date) - new Date(a.issue_date))
 
     setCredentials(filtered)
   }
 
   const handleSearchChange = (value) => {
     setSearchTerm(value)
-    applyFilters(selectedCategory, value, selectedIssuer, selectedYear, sortBy)
+    applyFilters(selectedCategory, value, selectedIssuer, selectedYear)
   }
 
   const handleIssuerChange = (value) => {
     setSelectedIssuer(value)
-    applyFilters(selectedCategory, searchTerm, value, selectedYear, sortBy)
+    applyFilters(selectedCategory, searchTerm, value, selectedYear)
   }
 
   const handleYearChange = (value) => {
     setSelectedYear(value)
-    applyFilters(selectedCategory, searchTerm, selectedIssuer, value, sortBy)
-  }
-
-  const handleSortChange = (value) => {
-    setSortBy(value)
-    applyFilters(selectedCategory, searchTerm, selectedIssuer, selectedYear, value)
+    applyFilters(selectedCategory, searchTerm, selectedIssuer, value)
   }
 
   const getUniqueIssuers = () => {
@@ -202,17 +195,19 @@ function App({ initialTab }) {
 
   const getActiveFiltersCount = () => {
     let count = 0
+    if (selectedCategory !== 'Todas' && selectedCategory !== 'All') count++
     if (selectedIssuer !== 'Todos' && selectedIssuer !== 'All') count++
     if (selectedYear !== 'Todos' && selectedYear !== 'All') count++
-    if (sortBy !== 'Más reciente' && sortBy !== 'Most Recent') count++
     return count
   }
 
   const clearAllFilters = () => {
-    setSelectedIssuer(language === 'es' ? 'Todos' : 'All')
-    setSelectedYear(language === 'es' ? 'Todos' : 'All')
-    setSortBy(language === 'es' ? 'Más reciente' : 'Most Recent')
-    applyFilters(selectedCategory, searchTerm, language === 'es' ? 'Todos' : 'All', language === 'es' ? 'Todos' : 'All', language === 'es' ? 'Más reciente' : 'Most Recent')
+    const allLabel = language === 'es' ? 'Todos' : 'All'
+    const allCatLabel = language === 'es' ? 'Todas' : 'All'
+    setSelectedCategory(allCatLabel)
+    setSelectedIssuer(allLabel)
+    setSelectedYear(allLabel)
+    applyFilters(allCatLabel, searchTerm, allLabel, allLabel)
   }
 
   const toggleSelectionMode = () => {
@@ -380,9 +375,38 @@ function App({ initialTab }) {
     return type
   }
 
-  const groupCredentialsByCategory = () => {
+  const groupCredentials = () => {
     if (selectionMode) return { [t.myCredentials]: credentials }
 
+    if (groupBy === 'issuer') {
+      const groups = {}
+      credentials.forEach(cred => {
+        if (!groups[cred.issuer]) groups[cred.issuer] = []
+        groups[cred.issuer].push(cred)
+      })
+      const tecOrder = ['Posgrado', 'Profesional', 'PrepaTEC', 'Educación Continua']
+      const ordered = {}
+      tecOrder.forEach(iss => { if (groups[iss]) ordered[iss] = groups[iss] })
+      Object.keys(groups)
+        .filter(iss => !tecOrder.includes(iss))
+        .sort((a, b) => a.localeCompare(b))
+        .forEach(iss => { ordered[iss] = groups[iss] })
+      return ordered
+    }
+
+    if (groupBy === 'year') {
+      const groups = {}
+      credentials.forEach(cred => {
+        const y = new Date(cred.issue_date).getFullYear().toString()
+        if (!groups[y]) groups[y] = []
+        groups[y].push(cred)
+      })
+      const ordered = {}
+      Object.keys(groups).sort((a, b) => Number(b) - Number(a)).forEach(k => { ordered[k] = groups[k] })
+      return ordered
+    }
+
+    // Default: groupBy === 'type' → agrupa por category
     if (selectedCategory === 'Todas' || selectedCategory === 'All') {
       const groups = {}
       credentials.forEach(cred => {
@@ -396,25 +420,6 @@ function App({ initialTab }) {
       return orderedGroups
     }
     return { [selectedCategory]: credentials }
-  }
-
-  const groupCredentialsByIssuer = (categoryCredentials, categoryName) => {
-    if (selectionMode) return { 'all': categoryCredentials }
-    const issuerGroups = {}
-    categoryCredentials.forEach(cred => {
-      if (!issuerGroups[cred.issuer]) issuerGroups[cred.issuer] = []
-      issuerGroups[cred.issuer].push(cred)
-    })
-    const isOrderedCategory = categoryName !== 'Otras' && categoryName !== 'Other' &&
-                               categoryName !== 'Vencidas' && categoryName !== 'Expired'
-    if (isOrderedCategory) {
-      const issuerOrder = ['Posgrado', 'Profesional', 'PrepaTEC', 'Educación Continua']
-      const orderedIssuerGroups = {}
-      issuerOrder.forEach(iss => { if (issuerGroups[iss]) orderedIssuerGroups[iss] = issuerGroups[iss] })
-      Object.keys(issuerGroups).forEach(iss => { if (!orderedIssuerGroups[iss]) orderedIssuerGroups[iss] = issuerGroups[iss] })
-      return orderedIssuerGroups
-    }
-    return issuerGroups
   }
 
   if (!isLoggedIn) {
@@ -503,12 +508,26 @@ function App({ initialTab }) {
                 <span className="wallet-toolbar__search-icon">🔍</span>
               </div>
 
-              {/* Row 2: Filters button (50%) + Import button (50%) */}
+              {/* Row 2: Filters button (left) + Arrange dropdown (right) */}
               <div className="wallet-toolbar__actions">
                 <button className="wallet-toolbar__filters-btn" onClick={() => setFiltersOpen(!filtersOpen)}>
                   <span>⚙️</span> {t.filters}
                   {getActiveFiltersCount() > 0 && <span className="wallet-toolbar__badge">{getActiveFiltersCount()}</span>}
                 </button>
+                <select
+                  value={groupBy}
+                  onChange={(e) => setGroupBy(e.target.value)}
+                  className="wallet-toolbar__group-select"
+                  aria-label={t.arrangeBy}
+                >
+                  <option value="type">{t.arrangeBy}: {t.arrangeByType}</option>
+                  <option value="issuer">{t.arrangeBy}: {t.arrangeByIssuer}</option>
+                  <option value="year">{t.arrangeBy}: {t.arrangeByYear}</option>
+                </select>
+              </div>
+
+              {/* Row 3: Import button full width */}
+              <div className="wallet-toolbar__import-row">
                 <button className="wallet-toolbar__import-btn" onClick={() => setUploadModalOpen(true)}>
                   + {language === 'es' ? 'Importar' : 'Import'}
                 </button>
@@ -526,12 +545,6 @@ function App({ initialTab }) {
                     </select>
                     <select value={selectedYear} onChange={(e) => handleYearChange(e.target.value)} className="wallet-toolbar__select">
                       {getUniqueYears().map(year => <option key={year} value={year}>{year === 'Todos' || year === 'All' ? (language === 'es' ? 'Todos los años' : 'All years') : year}</option>)}
-                    </select>
-                    <select value={sortBy} onChange={(e) => handleSortChange(e.target.value)} className="wallet-toolbar__select">
-                      <option value={language === 'es' ? 'Más reciente' : 'Most Recent'}>{t.mostRecent}</option>
-                      <option value={language === 'es' ? 'Más antiguo' : 'Oldest'}>{t.oldest}</option>
-                      <option value="A-Z">A-Z</option>
-                      <option value="Z-A">Z-A</option>
                     </select>
                   </div>
                   {getActiveFiltersCount() > 0 && (
@@ -558,83 +571,72 @@ function App({ initialTab }) {
               </div>
             ) : (
               <div className="shelves-container" ref={shelvesRef}>
-                {Object.entries(groupCredentialsByCategory()).map(([categoryName, categoryCredentials]) => (
-                  <div key={categoryName} className="shelf-section">
-                    <h2 className="shelf-title">{categoryName}</h2>
+                {Object.entries(groupCredentials()).map(([groupName, groupCredentialsList]) => (
+                  <div key={groupName} className="shelf-section">
+                    <h2 className="shelf-title">{groupName}</h2>
                     <div className="shelf">
                       <div className="shelf-items">
-                        {Object.entries(groupCredentialsByIssuer(categoryCredentials, categoryName)).map(([issuerName, issuerCredentials], issuerIndex, array) => (
-                          <div key={issuerName} className="issuer-group-wrapper">
-                            <div className="issuer-group">
-                              {issuerName !== 'all' && <div className="issuer-label">{issuerName}</div>}
-                              <div className="issuer-credentials">
-                                {issuerCredentials.map((credential) => {
-                                  const isSelected = selectedCredentials.some(c => c.id === credential.id)
-                                  const status = credential.status || (credential.category === 'Vencidas' ? 'expired' : 'active')
-                                  const title = language === 'en' && credential.title_en ? credential.title_en : credential.title
-                                  const skills = language === 'en' && credential.skills_en ? credential.skills_en : credential.skills
-                                  return (
-                                    <div
-                                      key={credential.id}
-                                      className={`cred-card cred-card--${status} ${selectionMode ? 'cred-card--selectable' : ''} ${isSelected ? 'cred-card--selected' : ''}`}
-                                      onClick={() => selectionMode ? toggleCredentialSelection(credential) : openCredentialDetail(credential)}
-                                    >
-                                      {selectionMode && (
-                                        <div className="cred-card__checkbox">
-                                          <input type="checkbox" checked={isSelected}
-                                            onChange={() => toggleCredentialSelection(credential)}
-                                            onClick={(e) => e.stopPropagation()} />
-                                        </div>
+                        <div className="issuer-credentials">
+                          {groupCredentialsList.map((credential) => {
+                            const isSelected = selectedCredentials.some(c => c.id === credential.id)
+                            const status = credential.status || (credential.category === 'Vencidas' ? 'expired' : 'active')
+                            const title = language === 'en' && credential.title_en ? credential.title_en : credential.title
+                            const skills = language === 'en' && credential.skills_en ? credential.skills_en : credential.skills
+                            return (
+                              <div
+                                key={credential.id}
+                                className={`cred-card cred-card--${status} ${selectionMode ? 'cred-card--selectable' : ''} ${isSelected ? 'cred-card--selected' : ''}`}
+                                onClick={() => selectionMode ? toggleCredentialSelection(credential) : openCredentialDetail(credential)}
+                              >
+                                {selectionMode && (
+                                  <div className="cred-card__checkbox">
+                                    <input type="checkbox" checked={isSelected}
+                                      onChange={() => toggleCredentialSelection(credential)}
+                                      onClick={(e) => e.stopPropagation()} />
+                                  </div>
+                                )}
+
+                                {/* Image area */}
+                                <div className="cred-card__image-area">
+                                  <img src={getImagePath(credential.thumbnail)} alt={title} className="cred-card__img" />
+                                </div>
+
+                                {/* Info */}
+                                <div className="cred-card__info">
+                                  <h3 className="cred-card__name">{title}</h3>
+                                  <p className="cred-card__issuer">{credential.issuer}</p>
+
+                                  <div className="cred-card__meta">
+                                    <span className="cred-card__year">{new Date(credential.issue_date).getFullYear()}</span>
+                                    <span className="cred-card__divider-dot"></span>
+                                    <span className="cred-card__type">{getTypeLabel(credential.type)}</span>
+                                    {credential.hours > 0 && (
+                                      <>
+                                        <span className="cred-card__divider-dot"></span>
+                                        <span className="cred-card__hours">{credential.hours}h</span>
+                                      </>
+                                    )}
+                                  </div>
+
+                                  <div className={`cred-card__status cred-card__status--${status}`}>
+                                    {getStatusLabel(status)}
+                                  </div>
+
+                                  {skills && skills.length > 0 && (
+                                    <div className="cred-card__tags">
+                                      {skills.slice(0, 3).map((skill, i) => (
+                                        <span key={i} className="cred-card__tag">{skill}</span>
+                                      ))}
+                                      {skills.length > 3 && (
+                                        <span className="cred-card__tag cred-card__tag--more">+{skills.length - 3}</span>
                                       )}
-
-                                      {/* Image area */}
-                                      <div className="cred-card__image-area">
-                                        <img src={getImagePath(credential.thumbnail)} alt={title} className="cred-card__img" />
-                                        <span className={`cred-card__status-dot cred-card__status-dot--${status}`}></span>
-                                      </div>
-
-                                      {/* Info */}
-                                      <div className="cred-card__info">
-                                        <h3 className="cred-card__name">{title}</h3>
-                                        <p className="cred-card__issuer">{credential.issuer}</p>
-
-                                        <div className="cred-card__meta">
-                                          <span className="cred-card__year">{new Date(credential.issue_date).getFullYear()}</span>
-                                          <span className="cred-card__divider-dot"></span>
-                                          <span className="cred-card__type">{getTypeLabel(credential.type)}</span>
-                                          {credential.hours > 0 && (
-                                            <>
-                                              <span className="cred-card__divider-dot"></span>
-                                              <span className="cred-card__hours">{credential.hours}h</span>
-                                            </>
-                                          )}
-                                        </div>
-
-                                        <div className={`cred-card__status cred-card__status--${status}`}>
-                                          {getStatusLabel(status)}
-                                        </div>
-
-                                        {skills && skills.length > 0 && (
-                                          <div className="cred-card__tags">
-                                            {skills.slice(0, 3).map((skill, i) => (
-                                              <span key={i} className="cred-card__tag">{skill}</span>
-                                            ))}
-                                            {skills.length > 3 && (
-                                              <span className="cred-card__tag cred-card__tag--more">+{skills.length - 3}</span>
-                                            )}
-                                          </div>
-                                        )}
-                                      </div>
                                     </div>
-                                  )
-                                })}
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                            {issuerIndex < array.length - 1 && issuerName !== 'all' && (
-                              <div className="issuer-divider"></div>
-                            )}
-                          </div>
-                        ))}
+                            )
+                          })}
+                        </div>
                       </div>
                       <div className="shelf-board"></div>
                     </div>

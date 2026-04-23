@@ -2628,14 +2628,61 @@ html, body {
   pointer-events: none;
 }
 
-/* Row 2: Filters (50%) + Import (50%) */
+/* Row 2: Filters (left) + Arrange (right). Row 3: Import full width */
 .wallet-toolbar__actions {
   display: flex;
   gap: 0.6rem;
 }
 
+.wallet-toolbar__import-row {
+  display: flex;
+}
+
+.wallet-toolbar__import-row .wallet-toolbar__import-btn {
+  width: 100%;
+}
+
+.wallet-toolbar__group-select {
+  flex: 1 1 0;
+  width: 0;
+  min-width: 0;
+  box-sizing: border-box;
+  height: 2.45rem;
+  padding: 0.6rem 2rem 0.6rem 1rem;
+  background: white;
+  color: #4a5568;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3e%3cpath d='M1 1L6 6L11 1' stroke='%234a5568' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  transition: all 0.2s ease;
+}
+
+.wallet-toolbar__group-select:hover {
+  border-color: #0033a0;
+  color: #0033a0;
+}
+
+.wallet-toolbar__group-select:focus,
+.wallet-toolbar__group-select:focus-visible {
+  outline: none;
+  border-color: #e2e8f0;
+  background-color: white;
+  color: #4a5568;
+}
+
 .wallet-toolbar__filters-btn {
-  flex: 1;
+  flex: 1 1 0;
+  width: 0;
+  min-width: 0;
+  box-sizing: border-box;
+  height: 2.45rem;
   padding: 0.6rem 1rem;
   background: white;
   color: #4a5568;
